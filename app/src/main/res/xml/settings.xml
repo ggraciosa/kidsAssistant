@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <SwitchPreference
+        android:key="computePlayingTime"
+        android:title="Compute playing time"
+        android:summary="Counts the time spent with screen on and notifies you when today's limit is reached"
+        android:defaultValue="false" />
+
+    <ListPreference
+        android:key="maxPlayingTime"
+        android:dialogTitle="Select today's playing time limit"
+        android:title="Playing time limit"
+        android:summary="Today's playing time limit"
+        android:entries="@array/settings_max_playtime_list_labels"
+        android:entryValues="@array/settings_max_playtime_list_values"
+        android:defaultValue="120"/>
+
+</PreferenceScreen>

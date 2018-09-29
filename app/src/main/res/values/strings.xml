@@ -1,0 +1,23 @@
+<resources>
+    <string name="app_name">Kids Assistant</string>
+    <string name="settings_title">Settings</string>
+
+    <string-array name="settings_max_playtime_list_labels">
+        <item>0.5 hour</item>
+        <item>1.0 hour</item>
+        <item>1.5 hours</item>
+        <item>2.0 hours</item>
+        <item>2.5 hours</item>
+        <item>3.0 hours</item>
+    </string-array>
+
+    <string-array name="settings_max_playtime_list_values">
+        <item>30</item>
+        <item>60</item>
+        <item>90</item>
+        <item>120</item>
+        <item>150</item>
+        <item>180</item>
+    </string-array>
+
+</resources>
