@@ -10,7 +10,7 @@ public class Constants {
     //static final TimeUnit TIME_UNIT = TimeUnit.MINUTES;
 
     // time step
-    public static final long INTERVAL = 1000 * 30;
+    public static final long INTERVAL = 1000 * 60 * 3;
     public static final int DEFAULT_PROGRESS_THRESHOLD_PERCENTAGE = 100;
 
 }

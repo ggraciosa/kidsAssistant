@@ -68,6 +68,13 @@ public class MySharedPrefManager {
 
         // Get non default shared preference
         mAuxSharedPref = context.getSharedPreferences(SHARED_PREF_FILENAME, Context.MODE_PRIVATE);
+        // Initialize playing date if needed
+        String lastPlayingDate = mAuxSharedPref.getString(SHARED_PREF_PLAYING_DATE_KEY, "EMPTY");
+        if (lastPlayingDate.equals("EMPTY")){
+            Editor editor = mAuxSharedPref.edit();
+            editor.putString(SHARED_PREF_PLAYING_DATE_KEY, getCurrentDate());
+            editor.commit();
+        }
     }
 
     public void updatePlayingTime() {
@@ -130,14 +137,19 @@ public class MySharedPrefManager {
         String lastDate = getLastPlayingDate();
         String currentDate = getCurrentDate();
 
+        MyLog.d(TAG, "updatePlayingDateIfNeeded: lastDate = " + lastDate);
+        MyLog.d(TAG, "updatePlayingDateIfNeeded: currentDate = " + currentDate);
+
         if (!currentDate.equals(lastDate)){
             // New day: update
             Editor editor = mAuxSharedPref.edit();
             editor.putString(SHARED_PREF_PLAYING_DATE_KEY, currentDate);
             editor.commit();
+            MyLog.d(TAG, "updatePlayingDateIfNeeded: return true");
             return true;
         } else {
             // Same day: no need to change
+            MyLog.d(TAG, "updatePlayingDateIfNeeded: return false");
             return false;
         }
     }
