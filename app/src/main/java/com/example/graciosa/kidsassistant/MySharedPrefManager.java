@@ -14,6 +14,7 @@ import java.util.concurrent.TimeUnit;
 import com.example.graciosa.kidsassistant.Constants;
 
 import static com.example.graciosa.kidsassistant.Constants.DEFAULT_PROGRESS_THRESHOLD_PERCENTAGE;
+import static com.example.graciosa.kidsassistant.Constants.INTERVAL;
 
 /**
  *  Manages all shared preferences making int transparent to other classes which shared preference
@@ -90,6 +91,12 @@ public class MySharedPrefManager {
 
         // Compute total elapsed time
         long playingTime = elapsedTime - previousElapsedTime;
+        if ((playingTime < 0) // clock changed backwards e.g. exiting daylight saving time
+            || (playingTime > 5 * INTERVAL)) // // clock changed fwd e.g. entering summer time
+        {
+            MyLog.d(TAG, "updatePlayingTime: clock changed, taking fixed interaval as time step");
+            playingTime = INTERVAL;
+        }
 
         Editor editor = mAuxSharedPref.edit();
         editor.putLong(SHARED_PREF_LAST_ELAPSED_TIME_KEY, elapsedTime);
@@ -137,19 +144,15 @@ public class MySharedPrefManager {
         String lastDate = getLastPlayingDate();
         String currentDate = getCurrentDate();
 
-        MyLog.d(TAG, "updatePlayingDateIfNeeded: lastDate = " + lastDate);
-        MyLog.d(TAG, "updatePlayingDateIfNeeded: currentDate = " + currentDate);
-
         if (!currentDate.equals(lastDate)){
             // New day: update
             Editor editor = mAuxSharedPref.edit();
             editor.putString(SHARED_PREF_PLAYING_DATE_KEY, currentDate);
             editor.commit();
-            MyLog.d(TAG, "updatePlayingDateIfNeeded: return true");
+            MyLog.d(TAG, "updatePlayingDateIfNeeded: date changed");
             return true;
         } else {
             // Same day: no need to change
-            MyLog.d(TAG, "updatePlayingDateIfNeeded: return false");
             return false;
         }
     }

@@ -13,12 +13,18 @@ import android.view.View;
  * 1. Replace PreferenceFragment with PreferenceFragmentCompat
  * 2. done - Icons
  * 3. done - Theme
- * 4. Remove logs
- * 5. Pizza chart in main activity
+ * 4. Clean: logs, commented code, not used code, not used resources, etc.
+ * 5. done - Pie chart (https://jitpack.io/com/github/PhilJay/MPAndroidChart/v3.0.3/javadoc/)
  * 6. internationalize and localize
- * 7. git hub
- * history (provider)
- * 9. define constants in string resources to use same value in .java and .xml
+ * 7. done - git hub
+ * 8. history (provider)
+ * 9. Fix orientation change bug
+ * 10. Pause button in notification?
+ * 11. Pie chart: center text; handle overtime (colors, layout); change notification overtime colors to match it
+ * 12. done: handle clock changes e.g. entering and exiting daylight saving time
+ * 13. execute receive in a background thread
+ * 14. done - Heads up notif does not work in M
+ * 15. display selected values in preference
  */
 
 public class MainActivity extends AppCompatActivity {
@@ -26,14 +32,23 @@ public class MainActivity extends AppCompatActivity {
     final String TAG = MainActivity.class.getSimpleName();
 
     private SettingsFragment mSettingsFragment;
+    private PieChartFragment mPieChartFragment;
     private boolean mShowOptionMenu;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        // init data
         mShowOptionMenu = true;
-        setContentView(R.layout.activity_main);
         PreferenceManager.setDefaultValues(this, R.xml.settings, false);
+
+        // init UI
+        setContentView(R.layout.activity_main);
+        mPieChartFragment = new PieChartFragment();
+        getFragmentManager().beginTransaction()
+                .add(R.id.main_activity_container, mPieChartFragment)
+                .commit();
     }
 
     @Override
@@ -50,7 +65,7 @@ public class MainActivity extends AppCompatActivity {
         return true;
     }
 
-    // invoked by system in response to invalidateOptionsMenu()
+    // Invoked by system in response to invalidateOptionsMenu()
     @Override
     public boolean onPrepareOptionsMenu(Menu menu){
         return mShowOptionMenu;
@@ -68,6 +83,10 @@ public class MainActivity extends AppCompatActivity {
                 // Trigger redisplay of options menu
                 mShowOptionMenu = true;
                 invalidateOptionsMenu();
+                // redisplay pie chart
+                getFragmentManager().beginTransaction()
+                        .replace(R.id.main_activity_container, mPieChartFragment)
+                        .commit();
                 return true;
             case R.id.settings_id:
                 MyLog.d(TAG,"Settings menu item selected");

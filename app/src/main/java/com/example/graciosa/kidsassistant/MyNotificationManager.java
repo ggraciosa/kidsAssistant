@@ -18,7 +18,7 @@ public class MyNotificationManager {
 
     final int NOTIF_ID = 0;
     final String HIGH_IMPORTANCE_CHANNEL_ID = "KIDS_ASSISTANT_HIGH_IMPORTANCE_NOTIF_CHANNEL";
-    final String LOW_IMPORTANCE_CHANNEL_ID = "KIDS_ASSISTANT_LOW_IMPORTANCE_NOTIF_CHANNEL";
+    final String MID_IMPORTANCE_CHANNEL_ID = "KIDS_ASSISTANT_MID_IMPORTANCE_NOTIF_CHANNEL";
 
     /***************
      *** METHODS ***
@@ -31,14 +31,14 @@ public class MyNotificationManager {
 
     /* Posts regular notification in status bar*/
     public void postProgressMediumImportance(Context context, int minutesRemaining, int progress_max, int progress_current){
-        NotificationCompat.Builder builder = buildBaseNotif(context, LOW_IMPORTANCE_CHANNEL_ID);
+        NotificationCompat.Builder builder = buildBaseNotif(context, MID_IMPORTANCE_CHANNEL_ID);
         // Customize the notification
         builder.setContentText(Long.toString(minutesRemaining) + " minutes left");
         builder.setProgress(progress_max, progress_current, false);
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
             // For API level < 26 there is no notif channel so importance attached to channel will
             // not be considered. Need to set priority here.
-            builder.setPriority(Notification.PRIORITY_DEFAULT);
+            builder.setPriority(NotificationCompat.PRIORITY_DEFAULT);
         }
         post(context, builder);
     }
@@ -50,11 +50,24 @@ public class MyNotificationManager {
         builder.setContentText(Long.toString(minutesRemaining) + " minutes left");
         builder.setProgress(progress_max, progress_current, false);
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
-            // For API level < 26 there is no notif channel so importance attached to channel will
-            // not be considered. Need to set priority here.
-            builder.setPriority(Notification.PRIORITY_HIGH);
+            // For API level < 26 there is no notif channel so importance attached to channel will not be considered.
+            // For system to consider it high importance and display as heads up, both vibe and high priority must be set.
+            builder.setPriority(NotificationCompat.PRIORITY_HIGH)
+            .setDefaults(Notification.DEFAULT_VIBRATE);
+
         }
         post(context, builder);
+    }
+
+    private NotificationCompat.Builder buildBaseNotif(Context context, String channelId){
+        Intent intent = new Intent(context, MainActivity.class);
+        PendingIntent pendingIntent = PendingIntent.getActivity(context, 0, intent, 0);
+        NotificationCompat.Builder builder = new NotificationCompat.Builder(context, channelId)
+                .setSmallIcon(R.mipmap.ic_notif_hourglass)
+                .setContentTitle("Kids Assistant")
+                .setContentIntent(pendingIntent)
+                .setAutoCancel(true);
+        return builder;
     }
 
     public void postTimeout(Context context, int overtimeMinutes){
@@ -81,21 +94,11 @@ public class MyNotificationManager {
 
             // Create channel to show notifs in status bar but do not make noise neither interrupt
             name = "High importance";
-            channel = new NotificationChannel(LOW_IMPORTANCE_CHANNEL_ID, name, NotificationManager.IMPORTANCE_LOW);
+            channel = new NotificationChannel(MID_IMPORTANCE_CHANNEL_ID, name, NotificationManager.IMPORTANCE_LOW);
             channel.setDescription("Near and post timeout notifications");
+            channel.enableVibration(true);
             notificationManager.createNotificationChannel(channel);
         }
-    }
-
-    private NotificationCompat.Builder buildBaseNotif(Context context, String channelId){
-        Intent intent = new Intent(context, MainActivity.class);
-        PendingIntent pendingIntent = PendingIntent.getActivity(context, 0, intent, 0);
-        NotificationCompat.Builder builder = new NotificationCompat.Builder(context, channelId)
-                .setSmallIcon(R.mipmap.ic_notif_hourglass)
-                .setContentTitle("Kids Assistant")
-                .setContentIntent(pendingIntent)
-                .setAutoCancel(true);
-        return builder;
     }
 
     private void post(Context context, NotificationCompat.Builder builder){

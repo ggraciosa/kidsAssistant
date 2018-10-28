@@ -15,7 +15,7 @@ import static com.example.graciosa.kidsassistant.MySharedPrefManager.SHARED_PREF
 
 
 /**
- *  Handles the Settings menu item
+ *  Handles the Settings menu items
  **/
 
 public class SettingsFragment extends PreferenceFragment
@@ -25,11 +25,9 @@ public class SettingsFragment extends PreferenceFragment
      *** CONSTANTS ***
      *****************/
 
-
     /**************
      *** FIELDS ***
      **************/
-
 
     /***************
      *** METHODS ***

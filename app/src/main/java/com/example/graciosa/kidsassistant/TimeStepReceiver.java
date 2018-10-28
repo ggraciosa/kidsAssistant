@@ -49,24 +49,22 @@ public class TimeStepReceiver extends BroadcastReceiver {
         int progress_max = (int) minutesMaxPlaying;
         int progress_current = Math.min((int) minutesPlaying, (int) minutesMaxPlaying);
 
-        // Decide notification importance and post
+        // Decide notification importance and post the notif
         MyNotificationManager notif = new MyNotificationManager(context);
         if (progress_current < progress_max) {
             // There is still some time to play
             int minutesRemaining = progress_max - progress_current;
             int progressThreshold = sp.getProgressThresholdInMinutes();
             float percent = (float) progress_current / progress_max;
-            MyLog.d(TAG, "progress_max: " + progress_max + "; progress_current: " + progress_current);
-            MyLog.d(TAG, "percent: " + percent + "; progressThreshold: " + progressThreshold);
             if (Math.round(100 * percent) < progressThreshold) {
-                MyLog.d(TAG, "MEDIUM PRI");
+                MyLog.d(TAG, "Notif priority: medium");
                 notif.postProgressMediumImportance(context, minutesRemaining, progress_max, progress_current);
             } else {
-                MyLog.d(TAG, "HIGH PRI");
+                MyLog.d(TAG, "Notif priority: high");
                 notif.postProgressHighImportance(context, minutesRemaining, progress_max, progress_current);
             }
         } else {
-            // Playing time is over.
+            // Playing time is over
             long minutesOvertime = minutesPlaying - minutesMaxPlaying;
             notif.postTimeout(context, (int) minutesOvertime);
         }
