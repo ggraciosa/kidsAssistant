@@ -1,13 +1,9 @@
 package com.example.graciosa.kidsassistant;
 
+import android.support.v7.preference.PreferenceFragmentCompat;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
-import android.content.res.TypedArray;
 import android.os.Bundle;
-import android.preference.PreferenceFragment;
-import android.preference.PreferenceManager;
-
-import com.example.graciosa.kidsassistant.Constants;
 
 import static com.example.graciosa.kidsassistant.Constants.INTERVAL;
 import static com.example.graciosa.kidsassistant.MySharedPrefManager.SHARED_PREF_SETTINGS_COMPUTE_PLAYING_TIME_KEY;
@@ -18,7 +14,7 @@ import static com.example.graciosa.kidsassistant.MySharedPrefManager.SHARED_PREF
  *  Handles the Settings menu items
  **/
 
-public class SettingsFragment extends PreferenceFragment
+public class SettingsFragment extends PreferenceFragmentCompat
         implements OnSharedPreferenceChangeListener {
 
     /*****************
@@ -36,9 +32,12 @@ public class SettingsFragment extends PreferenceFragment
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+    }
 
+    @Override
+    public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
         // Load the preferences from an XML resource
-        addPreferencesFromResource(R.xml.settings);
+        setPreferencesFromResource(R.xml.settings, rootKey);
     }
 
     @Override

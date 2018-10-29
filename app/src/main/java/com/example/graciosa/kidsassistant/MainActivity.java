@@ -1,16 +1,19 @@
 package com.example.graciosa.kidsassistant;
 
 import android.preference.PreferenceManager;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
-import android.view.View;
+
+import java.util.List;
 
 /*****
  * TODO:
- * 1. Replace PreferenceFragment with PreferenceFragmentCompat
+ * 1. done - Replace PreferenceFragment with PreferenceFragmentCompat
  * 2. done - Icons
  * 3. done - Theme
  * 4. Clean: logs, commented code, not used code, not used resources, etc.
@@ -18,37 +21,103 @@ import android.view.View;
  * 6. internationalize and localize
  * 7. done - git hub
  * 8. history (provider)
- * 9. Fix orientation change bug
+ * 9. done - Fix orientation change bug
  * 10. Pause button in notification?
  * 11. Pie chart: center text; handle overtime (colors, layout); change notification overtime colors to match it
- * 12. done: handle clock changes e.g. entering and exiting daylight saving time
+ * 12. done - handle clock changes e.g. entering and exiting daylight saving time
  * 13. execute receive in a background thread
  * 14. done - Heads up notif does not work in M
  * 15. display selected values in preference
+ * 16. Settings action bar back navigation arrow is lost upon rotation
  */
 
 public class MainActivity extends AppCompatActivity {
 
-    final String TAG = MainActivity.class.getSimpleName();
+    /*****************
+     *** CONSTANTS ***
+     *****************/
 
+    final String TAG = MainActivity.class.getSimpleName();
+    final String INST_DATA_KEY_SHOW_OPTIONS_MENU = "key_show_options_menu";
+    final String INST_DATA_KEY_FRAG = "key_frag";
+    final String TAG_FRAG_SETTINGS = "frag_settings";
+    final String TAG_FRAG_PIE_CHART = "frag_pie_chart";
+
+    /***************
+     *** FIELDS ***
+     ***************/
+
+    private boolean mShowOptionMenu;
+    private FragmentManager mFragMgr;
     private SettingsFragment mSettingsFragment;
     private PieChartFragment mPieChartFragment;
-    private boolean mShowOptionMenu;
+
+    /***************
+     *** METHODS ***
+     ***************/
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        // init data
-        mShowOptionMenu = true;
+        // init saved state independent data
+        mFragMgr = getSupportFragmentManager();
+        mPieChartFragment = new PieChartFragment();
+        mSettingsFragment = new SettingsFragment();
+        setContentView(R.layout.activity_main);
         PreferenceManager.setDefaultValues(this, R.xml.settings, false);
 
-        // init UI
-        setContentView(R.layout.activity_main);
-        mPieChartFragment = new PieChartFragment();
-        getFragmentManager().beginTransaction()
-                .add(R.id.main_activity_container, mPieChartFragment)
+        if (savedInstanceState == null) {
+            // app being started with no previous state
+            // init data
+            mShowOptionMenu = true;
+            // init UI
+            addFragPieChart();
+        } else {
+            // system is restarting app for instance due to orientation change and will resume previous state
+            mShowOptionMenu = savedInstanceState.getBoolean(INST_DATA_KEY_SHOW_OPTIONS_MENU);
+            String frag = savedInstanceState.getString(INST_DATA_KEY_FRAG);
+            switch (frag) {
+                case TAG_FRAG_PIE_CHART:
+                    addFragPieChart();
+                    break;
+                case TAG_FRAG_SETTINGS:
+                    addFragSettings();
+                    break;
+            }
+        }
+    }
+
+    private void addFragPieChart(){
+        mFragMgr.beginTransaction()
+                .add(R.id.main_activity_container, mPieChartFragment, TAG_FRAG_PIE_CHART)
                 .commit();
+    }
+
+    private void addFragSettings(){
+        mFragMgr.beginTransaction()
+                .add(R.id.main_activity_container, mSettingsFragment, TAG_FRAG_SETTINGS)
+                .commit();
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState){
+        outState.putBoolean(INST_DATA_KEY_SHOW_OPTIONS_MENU, mShowOptionMenu);
+        outState.putString(INST_DATA_KEY_FRAG, getVisibleFragmentTag());
+    }
+
+    // Gets the name of the fragment currently displayed
+    private String getVisibleFragmentTag(){
+        List<Fragment> fragments = mFragMgr.getFragments();
+        if (fragments != null){
+            for (Fragment fragment : fragments){
+                if (fragment != null && fragment.isVisible()) {
+                    MyLog.d(TAG, fragment.getTag());
+                    return fragment.getTag();
+                }
+            }
+        }
+        return null;
     }
 
     @Override
@@ -67,7 +136,7 @@ public class MainActivity extends AppCompatActivity {
 
     // Invoked by system in response to invalidateOptionsMenu()
     @Override
-    public boolean onPrepareOptionsMenu(Menu menu){
+    public boolean onPrepareOptionsMenu(Menu menu) {
         return mShowOptionMenu;
     }
 
@@ -77,23 +146,22 @@ public class MainActivity extends AppCompatActivity {
         switch (item.getItemId()) {
             case android.R.id.home:
                 // handles action bar back button
-                getFragmentManager().beginTransaction().remove(mSettingsFragment).commit();
+                mFragMgr.beginTransaction().remove(mSettingsFragment).commit();
                 // Remove back button from action bar
                 getSupportActionBar().setDisplayHomeAsUpEnabled(false);
                 // Trigger redisplay of options menu
                 mShowOptionMenu = true;
                 invalidateOptionsMenu();
                 // redisplay pie chart
-                getFragmentManager().beginTransaction()
-                        .replace(R.id.main_activity_container, mPieChartFragment)
+                mFragMgr.beginTransaction()
+                        .replace(R.id.main_activity_container, mPieChartFragment, TAG_FRAG_PIE_CHART)
                         .commit();
                 return true;
             case R.id.settings_id:
-                MyLog.d(TAG,"Settings menu item selected");
+                MyLog.d(TAG, "Settings menu item selected");
                 // Display the fragment as the main content.
-                mSettingsFragment = new SettingsFragment();
-                getFragmentManager().beginTransaction()
-                        .replace(R.id.main_activity_container, mSettingsFragment)
+                mFragMgr.beginTransaction()
+                        .replace(R.id.main_activity_container, mSettingsFragment, TAG_FRAG_SETTINGS)
                         .commit();
                 // Set back button in action bar
                 getSupportActionBar().setDisplayHomeAsUpEnabled(true);
