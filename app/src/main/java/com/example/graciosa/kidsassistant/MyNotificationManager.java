@@ -6,6 +6,8 @@ import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
+import android.media.RingtoneManager;
+import android.net.Uri;
 import android.os.Build;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.app.NotificationManagerCompat;
@@ -75,6 +77,10 @@ public class MyNotificationManager {
         // Customize the notification
         builder.setContentText("Timeout! " + overtimeMinutes + " min over");
         builder.setPriority(NotificationCompat.PRIORITY_HIGH);
+        long[] v = {500,1000};
+        builder.setVibrate(v);
+        Uri uri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
+        builder.setSound(uri);
         builder.setProgress(100, 100, false);
         post(context, builder);
     }
