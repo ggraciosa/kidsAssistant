@@ -1,6 +1,6 @@
 package com.example.graciosa.kidsassistant;
 
-import android.support.v7.preference.PreferenceFragmentCompat;
+import androidx.preference.PreferenceFragmentCompat;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
 import android.os.Bundle;
