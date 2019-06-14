@@ -53,6 +53,9 @@ public class BootCompletedReceiver extends BroadcastReceiver {
             return;
         }
 
+        // override default playing time with today's day of the week max playing time
+        sp.setWeekdayMaxPlayingTime();
+
         // Set alarm to compute elapsed time
         MyAlarmManager.enableOrUpdate(context, INTERVAL);
 

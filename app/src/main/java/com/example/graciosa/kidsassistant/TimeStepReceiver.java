@@ -36,8 +36,11 @@ public class TimeStepReceiver extends BroadcastReceiver {
 
         // Kids are interacting with the device.
 
-        if (sp.updatePlayingDateIfNeeded()) {
-            // It is a new day: reset elapsed playing time reference and played time
+        if (sp.hasDateChanged()){
+            // It is a new day: change date and set max play time for the new date
+            sp.setPlayingDate();
+            sp.setWeekdayMaxPlayingTime();
+            // reset elapsed playing time reference and played time
             sp.resetElapsedPlayingTime();
             sp.resetPlayedTime();
         }

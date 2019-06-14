@@ -14,6 +14,6 @@
         android:summary="Today's playing time limit"
         android:entries="@array/settings_max_playtime_list_labels"
         android:entryValues="@array/settings_max_playtime_list_values"
-        android:defaultValue="120"/>
+        android:defaultValue="30"/>
 
 </PreferenceScreen>

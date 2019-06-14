@@ -65,7 +65,11 @@ public class MainActivity extends AppCompatActivity {
         mPieChartFragment = new PieChartFragment();
         mSettingsFragment = new SettingsFragment();
         setContentView(R.layout.activity_main);
+        // set preference default values
         PreferenceManager.setDefaultValues(this, R.xml.settings, false);
+        // override default preference max playing time with today's day of the week max playing time
+        MySharedPrefManager sp = new MySharedPrefManager(getApplicationContext());
+        sp.setWeekdayMaxPlayingTime();
 
         if (savedInstanceState == null) {
             // app being started with no previous state
@@ -157,6 +161,7 @@ public class MainActivity extends AppCompatActivity {
                         .replace(R.id.main_activity_container, mPieChartFragment, TAG_FRAG_PIE_CHART)
                         .commit();
                 return true;
+
             case R.id.settings_id:
                 MyLog.d(TAG, "Settings menu item selected");
                 // Display the fragment as the main content.
@@ -169,6 +174,7 @@ public class MainActivity extends AppCompatActivity {
                 mShowOptionMenu = false;
                 invalidateOptionsMenu();
                 return true;
+
             default:
                 return super.onOptionsItemSelected(item);
         }
