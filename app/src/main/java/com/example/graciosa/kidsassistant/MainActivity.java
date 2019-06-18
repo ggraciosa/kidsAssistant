@@ -4,6 +4,7 @@ import android.preference.PreferenceManager;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.appcompat.app.AppCompatActivity;
+
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -20,15 +21,19 @@ import java.util.List;
  * 5. done - Pie chart (https://jitpack.io/com/github/PhilJay/MPAndroidChart/v3.0.3/javadoc/)
  * 6. internationalize and localize
  * 7. done - git hub
- * 8. history (provider)
+ * 8. done - store daily played time in database
  * 9. done - Fix orientation change bug
  * 10. Pause button in notification?
  * 11. Pie chart: center text; handle overtime (colors, layout); change notification overtime colors to match it
  * 12. done - handle clock changes e.g. entering and exiting daylight saving time
- * 13. execute receive in a background thread
+ * 13. done - execute receiver in a background thread
  * 14. done - Heads up notif does not work in M
  * 15. display selected values in preference
  * 16. Settings action bar back navigation arrow is lost upon rotation
+ * 17. Display played time statistics
+ * 18. Bug: invalid default shared preference (computePlayingTime=true, maxPlayingTime=120) is brought
+ *     when install App in my Z3 Play P multi user; cleaning app data from Global Settings solves the
+ *     issue; issue does not happen in Z2 Play N single user neither G2 M single user.
  */
 
 public class MainActivity extends AppCompatActivity {
@@ -60,25 +65,28 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        // init saved state independent data
+        // Set preference default values
+        PreferenceManager.setDefaultValues(this, R.xml.settings, false);
+
+        // Override default preference play time limit with today's day of the week play time limit,
+        // but only if it is the first time in the day, in order to do avoid override a user choice
+        MySharedPrefManager sp = new MySharedPrefManager(getApplicationContext());
+        sp.setWeekdayPlayTimeLimitOnce();
+
+        // Init saved state independent data
         mFragMgr = getSupportFragmentManager();
         mPieChartFragment = new PieChartFragment();
         mSettingsFragment = new SettingsFragment();
         setContentView(R.layout.activity_main);
-        // set preference default values
-        PreferenceManager.setDefaultValues(this, R.xml.settings, false);
-        // override default preference max playing time with today's day of the week max playing time
-        MySharedPrefManager sp = new MySharedPrefManager(getApplicationContext());
-        sp.setWeekdayMaxPlayingTime();
 
         if (savedInstanceState == null) {
-            // app being started with no previous state
-            // init data
+            // App being started with no previous state
+            // Init data
             mShowOptionMenu = true;
             // init UI
             addFragPieChart();
         } else {
-            // system is restarting app for instance due to orientation change and will resume previous state
+            // System is restarting app for instance due to orientation change and will resume previous state
             mShowOptionMenu = savedInstanceState.getBoolean(INST_DATA_KEY_SHOW_OPTIONS_MENU);
             String frag = savedInstanceState.getString(INST_DATA_KEY_FRAG);
             switch (frag) {
@@ -149,14 +157,14 @@ public class MainActivity extends AppCompatActivity {
         // Handle menu item selection
         switch (item.getItemId()) {
             case android.R.id.home:
-                // handles action bar back button
+                // Handles action bar back button
                 mFragMgr.beginTransaction().remove(mSettingsFragment).commit();
                 // Remove back button from action bar
                 getSupportActionBar().setDisplayHomeAsUpEnabled(false);
                 // Trigger redisplay of options menu
                 mShowOptionMenu = true;
                 invalidateOptionsMenu();
-                // redisplay pie chart
+                // Redisplay pie chart
                 mFragMgr.beginTransaction()
                         .replace(R.id.main_activity_container, mPieChartFragment, TAG_FRAG_PIE_CHART)
                         .commit();

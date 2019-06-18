@@ -8,12 +8,12 @@
         android:defaultValue="false" />
 
     <ListPreference
-        android:key="maxPlayingTime"
+        android:key="playTimeLimit"
         android:dialogTitle="Select today's playing time limit"
         android:title="Playing time limit"
         android:summary="Today's playing time limit"
-        android:entries="@array/settings_max_playtime_list_labels"
-        android:entryValues="@array/settings_max_playtime_list_values"
-        android:defaultValue="30"/>
+        android:entries="@array/settings_playtime_limit_list_labels"
+        android:entryValues="@array/settings_playtime_limit_list_values"
+        android:defaultValue="30" />
 
 </PreferenceScreen>

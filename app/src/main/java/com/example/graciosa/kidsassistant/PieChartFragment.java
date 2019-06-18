@@ -56,7 +56,7 @@ public class PieChartFragment extends Fragment {
         // set pie pieces
         MySharedPrefManager sp = new MySharedPrefManager(getActivity());
         long playedTime = sp.getPlayedTimeInMinutes();
-        long maxPlayingTime = sp.getMaxPlayingTimeInMinutes();
+        long maxPlayingTime = sp.getPlayTimeLimitInMinutes();
         playedTime = Math.min((int) playedTime, (int) maxPlayingTime);
         long remainingTime = maxPlayingTime - playedTime;
         ArrayList<PieEntry> yValues = new ArrayList<>();

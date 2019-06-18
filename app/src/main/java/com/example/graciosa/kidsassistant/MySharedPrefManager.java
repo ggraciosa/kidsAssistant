@@ -6,9 +6,7 @@ import android.content.SharedPreferences.Editor;
 import android.os.SystemClock;
 import android.preference.PreferenceManager;
 
-import java.text.SimpleDateFormat;import java.text.DateFormatSymbols;
 import java.util.Calendar;
-import java.util.Date;
 import java.util.concurrent.TimeUnit;
 
 
@@ -34,14 +32,14 @@ public class MySharedPrefManager {
     public static final String SHARED_PREF_SETTINGS_COMPUTE_PLAYING_TIME_KEY = "computePlayingTime";
     public static final boolean SHARED_PREF_SETTINGS_COMPUTE_PLAYING_TIME_DEFAULT_VALUE = true;
     // Max allowed playing time in current day in minutes
-    public static final String SHARED_PREF_SETTINGS_MAX_PLAYING_TIME_KEY = "maxPlayingTime";
-    public static final String SHARED_PREF_SETTINGS_MAX_PLAYING_TIME_SUNDAY_VALUE = "90";
-    public static final String SHARED_PREF_SETTINGS_MAX_PLAYING_TIME_MONDAY_VALUE = "60";
-    public static final String SHARED_PREF_SETTINGS_MAX_PLAYING_TIME_TUESDAY_VALUE = "60";
-    public static final String SHARED_PREF_SETTINGS_MAX_PLAYING_TIME_WEDNESDAY_VALUE = "60";
-    public static final String SHARED_PREF_SETTINGS_MAX_PLAYING_TIME_THURSDAY_VALUE = "60";
-    public static final String SHARED_PREF_SETTINGS_MAX_PLAYING_TIME_FRIDAY_VALUE = "90";
-    public static final String SHARED_PREF_SETTINGS_MAX_PLAYING_TIME_SATURDAY_VALUE = "120";
+    public static final String SHARED_PREF_SETTINGS_PLAY_TIME_LIMIT_KEY = "playTimeLimit";
+    public static final String SHARED_PREF_SETTINGS_PLAY_TIME_LIMIT_SUNDAY_VALUE = "90";
+    public static final String SHARED_PREF_SETTINGS_PLAY_TIME_LIMIT_MONDAY_VALUE = "60";
+    public static final String SHARED_PREF_SETTINGS_PLAY_TIME_LIMIT_TUESDAY_VALUE = "60";
+    public static final String SHARED_PREF_SETTINGS_PLAY_TIME_LIMIT_WEDNESDAY_VALUE = "60";
+    public static final String SHARED_PREF_SETTINGS_PLAY_TIME_LIMIT_THURSDAY_VALUE = "60";
+    public static final String SHARED_PREF_SETTINGS_PLAY_TIME_LIMIT_FRIDAY_VALUE = "60";
+    public static final String SHARED_PREF_SETTINGS_PLAY_TIME_LIMIT_SATURDAY_VALUE = "90";
 
     // SHARED PREFERENCE: AUXILIAR
     // Auxiliar shared preference file name
@@ -54,6 +52,8 @@ public class MySharedPrefManager {
     public static final String SHARED_PREF_PLAYED_TIME_KEY = "playedTime";
     // Playing time percentage (0 - 100%) to promote notification from default to high (heads up)
     public static final String SHARED_PREF_PROGRESS_THRESHOLD_PERCENTAGE_KEY = "progressThreshold";
+    // Date to control weekday default play time updates
+    public static final String SHARED_PREF_WEEKDAY_UPDATE_CONTROL_DATE = "weekdayControlDate";
 
     /**************
      *** FIELDS ***
@@ -78,12 +78,12 @@ public class MySharedPrefManager {
         String lastPlayingDate = mAuxSharedPref.getString(SHARED_PREF_PLAYING_DATE_KEY, "EMPTY");
         if (lastPlayingDate.equals("EMPTY")){
             Editor editor = mAuxSharedPref.edit();
-            editor.putString(SHARED_PREF_PLAYING_DATE_KEY, getCurrentDate());
+            editor.putString(SHARED_PREF_PLAYING_DATE_KEY, Utils.getCurrentDate());
             editor.commit();
         }
     }
 
-    public void updatePlayingTime() {
+    public void updatePlayedTime() {
 
         long elapsedTime = SystemClock.elapsedRealtime();
         long previousElapsedTime = mAuxSharedPref.getLong(SHARED_PREF_LAST_ELAPSED_TIME_KEY, 0);
@@ -97,7 +97,7 @@ public class MySharedPrefManager {
         // Compute total elapsed time
         long playingTime = elapsedTime - previousElapsedTime;
         if ((playingTime < 0) // clock changed backwards e.g. exiting daylight saving time
-            || (playingTime > 5 * INTERVAL)) // // clock changed fwd e.g. entering summer time
+            || (playingTime > 5 * INTERVAL)) // clock changed fwd e.g. entering summer time
         {
             MyLog.d(TAG, "updatePlayingTime: clock changed, taking fixed interaval as time step");
             playingTime = INTERVAL;
@@ -109,7 +109,7 @@ public class MySharedPrefManager {
         editor.commit();
     }
 
-    public void resetElapsedPlayingTime(){
+    public void resetElapsedPlayedTime(){
         Editor editor = mAuxSharedPref.edit();
         editor.putLong(SHARED_PREF_LAST_ELAPSED_TIME_KEY, 0);
         editor.commit();
@@ -126,10 +126,10 @@ public class MySharedPrefManager {
         return TimeUnit.MILLISECONDS.toMinutes(playingTime);
     }
 
-    public long getMaxPlayingTimeInMinutes() {
-        long pt = Long.parseLong(mSettingsSharedPref.getString(SHARED_PREF_SETTINGS_MAX_PLAYING_TIME_KEY,
-                getWeekdayMaxPlayingTime()));
-        MyLog.d(TAG, "getMaxPlayingTimeInMinutes: " + String.valueOf(pt));
+    public long getPlayTimeLimitInMinutes() {
+        long pt = Long.parseLong(mSettingsSharedPref.getString(SHARED_PREF_SETTINGS_PLAY_TIME_LIMIT_KEY,
+                getWeekdayPlayTimeLimit()));
+        MyLog.d(TAG, "getPlayTimeLimitInMinutes: " + String.valueOf(pt));
         return pt;
     }
 
@@ -141,59 +141,72 @@ public class MySharedPrefManager {
 
     // true if a new day
     public boolean hasDateChanged(){
-        String lastDate = mAuxSharedPref.getString(SHARED_PREF_PLAYING_DATE_KEY, getCurrentDate());
-        String currentDate = getCurrentDate();
+        String lastDate = mAuxSharedPref.getString(SHARED_PREF_PLAYING_DATE_KEY, "EMPTY");
+        String currentDate = Utils.getCurrentDate();
         return !currentDate.equals(lastDate);
     }
 
     // Set today as playing date
     public void setPlayingDate(){
-        String currentDate = getCurrentDate();
+        String currentDate = Utils.getCurrentDate();
         Editor editor = mAuxSharedPref.edit();
         editor.putString(SHARED_PREF_PLAYING_DATE_KEY, currentDate);
         editor.commit();
         MyLog.d(TAG, "setPlayingDate: " + currentDate);
     }
 
-    // Set max playing time for today given which day of the week is today
-    public void setWeekdayMaxPlayingTime(){
-        String weekdayMaxPlayingTime = getWeekdayMaxPlayingTime();
-        Editor ed = mSettingsSharedPref.edit();
-        ed.putString(SHARED_PREF_SETTINGS_MAX_PLAYING_TIME_KEY, weekdayMaxPlayingTime);
-        ed.commit();
-        MyLog.d(TAG, "setWeekdayMaxPlayingTime: weekday=" + weekdayMaxPlayingTime +
-                ", maxPlayTime=" + weekdayMaxPlayingTime);
+    // Set play time limit for today given which day of the week is today.
+    // Do it only once a day because if user overrode default in settings, user choice should hold.
+    public void setWeekdayPlayTimeLimitOnce(){
+
+        String previousDate = mAuxSharedPref.getString(SHARED_PREF_WEEKDAY_UPDATE_CONTROL_DATE, "EMPTY");
+        String currentDate = Utils.getCurrentDate();
+        boolean firstCall = !currentDate.equals(previousDate);
+        if (firstCall){
+            // First time this method is called today
+            // Update control date
+            Editor edAux = mAuxSharedPref.edit();
+            edAux.putString(SHARED_PREF_WEEKDAY_UPDATE_CONTROL_DATE, currentDate);
+            edAux.commit();
+            // Update playtime limit given today's day of the week
+            String weekdayPlayTimeLimit = getWeekdayPlayTimeLimit();
+            Editor edDef = mSettingsSharedPref.edit();
+            edDef.putString(SHARED_PREF_SETTINGS_PLAY_TIME_LIMIT_KEY, weekdayPlayTimeLimit);
+            edDef.commit();
+            MyLog.d(TAG, "setWeekdayPlayTimeLimitOnce: playTimeLimit = " + weekdayPlayTimeLimit +
+                    ", updated=" + firstCall);
+        }
     }
 
-    private String getWeekdayMaxPlayingTime(){
+    private String getWeekdayPlayTimeLimit(){
 
         Calendar calendar = Calendar.getInstance();
         int weekday = calendar.get(Calendar.DAY_OF_WEEK);
-        String weekdayMaxPlayingTime = "";
+        String weekdayPlayTimeLimit = "";
         switch (weekday){
             case 1:
-                weekdayMaxPlayingTime = SHARED_PREF_SETTINGS_MAX_PLAYING_TIME_SUNDAY_VALUE;
+                weekdayPlayTimeLimit = SHARED_PREF_SETTINGS_PLAY_TIME_LIMIT_SUNDAY_VALUE;
                 break;
             case 2:
-                weekdayMaxPlayingTime = SHARED_PREF_SETTINGS_MAX_PLAYING_TIME_MONDAY_VALUE;
+                weekdayPlayTimeLimit = SHARED_PREF_SETTINGS_PLAY_TIME_LIMIT_MONDAY_VALUE;
                 break;
             case 3:
-                weekdayMaxPlayingTime = SHARED_PREF_SETTINGS_MAX_PLAYING_TIME_TUESDAY_VALUE;
+                weekdayPlayTimeLimit = SHARED_PREF_SETTINGS_PLAY_TIME_LIMIT_TUESDAY_VALUE;
                 break;
             case 4:
-                weekdayMaxPlayingTime = SHARED_PREF_SETTINGS_MAX_PLAYING_TIME_WEDNESDAY_VALUE;
+                weekdayPlayTimeLimit = SHARED_PREF_SETTINGS_PLAY_TIME_LIMIT_WEDNESDAY_VALUE;
                 break;
             case 5:
-                weekdayMaxPlayingTime = SHARED_PREF_SETTINGS_MAX_PLAYING_TIME_THURSDAY_VALUE;
+                weekdayPlayTimeLimit = SHARED_PREF_SETTINGS_PLAY_TIME_LIMIT_THURSDAY_VALUE;
                 break;
             case 6:
-                weekdayMaxPlayingTime = SHARED_PREF_SETTINGS_MAX_PLAYING_TIME_FRIDAY_VALUE;
+                weekdayPlayTimeLimit = SHARED_PREF_SETTINGS_PLAY_TIME_LIMIT_FRIDAY_VALUE;
                 break;
             case 7:
-                weekdayMaxPlayingTime = SHARED_PREF_SETTINGS_MAX_PLAYING_TIME_SATURDAY_VALUE;
+                weekdayPlayTimeLimit = SHARED_PREF_SETTINGS_PLAY_TIME_LIMIT_SATURDAY_VALUE;
                 break;
         }
-        return weekdayMaxPlayingTime;
+        return weekdayPlayTimeLimit;
     }
 
     public void setProgressThresholdInMinutes(int progressThreshold){
@@ -207,12 +220,4 @@ public class MySharedPrefManager {
                         DEFAULT_PROGRESS_THRESHOLD_PERCENTAGE);
         return progresThreshold;
     }
-
-    private String getCurrentDate(){
-        Date c = Calendar.getInstance().getTime();
-        SimpleDateFormat df = new SimpleDateFormat("dd-MMM-yyyy");
-        String currentDate = df.format(c);
-        return currentDate;
-    }
-
 }

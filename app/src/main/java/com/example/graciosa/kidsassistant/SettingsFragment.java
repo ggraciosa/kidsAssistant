@@ -7,7 +7,7 @@ import android.os.Bundle;
 
 import static com.example.graciosa.kidsassistant.Constants.INTERVAL;
 import static com.example.graciosa.kidsassistant.MySharedPrefManager.SHARED_PREF_SETTINGS_COMPUTE_PLAYING_TIME_KEY;
-import static com.example.graciosa.kidsassistant.MySharedPrefManager.SHARED_PREF_SETTINGS_MAX_PLAYING_TIME_KEY;
+import static com.example.graciosa.kidsassistant.MySharedPrefManager.SHARED_PREF_SETTINGS_PLAY_TIME_LIMIT_KEY;
 
 
 /**
@@ -16,18 +16,6 @@ import static com.example.graciosa.kidsassistant.MySharedPrefManager.SHARED_PREF
 
 public class SettingsFragment extends PreferenceFragmentCompat
         implements OnSharedPreferenceChangeListener {
-
-    /*****************
-     *** CONSTANTS ***
-     *****************/
-
-    /**************
-     *** FIELDS ***
-     **************/
-
-    /***************
-     *** METHODS ***
-     ***************/
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -52,9 +40,9 @@ public class SettingsFragment extends PreferenceFragmentCompat
                 MyAlarmManager.disable(getActivity());
                 // Reset continuous elapsed playing time control in order to do not compute
                 // the switched-off time when toggle is later switched-on.
-                sp.resetElapsedPlayingTime();
+                sp.resetElapsedPlayedTime();
             }
-        } else if (key.equals(SHARED_PREF_SETTINGS_MAX_PLAYING_TIME_KEY)) {
+        } else if (key.equals(SHARED_PREF_SETTINGS_PLAY_TIME_LIMIT_KEY)) {
             // no action needed here
         }
     }
