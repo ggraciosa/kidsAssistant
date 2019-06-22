@@ -19,7 +19,7 @@
         </activity>
 
         <receiver
-            android:name=".BootCompletedReceiver"
+            android:name=".receivers.BootCompletedReceiver"
             android:enabled="true"
             android:exported="true">
             <intent-filter>
@@ -28,15 +28,11 @@
         </receiver>
 
         <receiver
-            android:name=".TimeStepReceiver"
+            android:name=".receivers.TimeStepReceiver"
             android:enabled="true"
             android:exported="true">
         </receiver>
 
-        <receiver
-            android:name=".TimeStepReceiver"
-            android:enabled="true"
-            android:exported="true"></receiver>
     </application>
 
 </manifest>

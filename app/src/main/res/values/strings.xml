@@ -1,7 +1,12 @@
 <resources>
+    <!-- App resources -->
     <string name="app_name">Kids Assistant</string>
-    <string name="settings_title">Settings</string>
 
+    <!-- Menu resources -->
+    <string name="menu_settings_title">Settings</string>
+    <string name="menu_history_title">History</string>
+
+    <!-- Setting fragment resource -->
     <string-array name="settings_playtime_limit_list_labels">
         <item>0.5 hour</item>
         <item>1.0 hour</item>
@@ -20,7 +25,8 @@
         <item>180</item>
     </string-array>
 
-    <!-- TODO: Remove or change this placeholder text -->
+    <!-- History fragment resources -->
+    <string name="element_text">Element</string>
     <string name="hello_blank_fragment">Hello blank fragment</string>
 
 </resources>

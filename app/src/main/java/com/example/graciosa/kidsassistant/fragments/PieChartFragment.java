@@ -3,7 +3,9 @@ package com.example.graciosa.kidsassistant.fragments;
 import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
+
 import androidx.fragment.app.Fragment;
+
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -44,7 +46,7 @@ public class PieChartFragment extends Fragment {
         pieChart.setUsePercentValues(true);
         pieChart.getDescription().setEnabled(false);
         pieChart.getLegend().setEnabled(false);
-        pieChart.setExtraOffsets(5,5,5,5);
+        pieChart.setExtraOffsets(5, 5, 5, 5);
         pieChart.setDragDecelerationFrictionCoef(0.9f);
         pieChart.setHoleRadius(45f);
         pieChart.setTransparentCircleRadius(50f);
@@ -62,8 +64,8 @@ public class PieChartFragment extends Fragment {
         playedTime = Math.min((int) playedTime, (int) maxPlayingTime);
         long remainingTime = maxPlayingTime - playedTime;
         ArrayList<PieEntry> yValues = new ArrayList<>();
-        yValues.add(new PieEntry((float) playedTime,"Played"));
-        yValues.add(new PieEntry((float) remainingTime,"Remaining"));
+        yValues.add(new PieEntry((float) playedTime, "Played"));
+        yValues.add(new PieEntry((float) remainingTime, "Remaining"));
 
         PieDataSet dataSet = new PieDataSet(yValues, null);
         dataSet.setSliceSpace(2f);

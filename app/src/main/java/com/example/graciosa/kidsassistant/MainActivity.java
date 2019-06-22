@@ -10,6 +10,7 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 
+import com.example.graciosa.kidsassistant.fragments.HistoryFragment;
 import com.example.graciosa.kidsassistant.fragments.PieChartFragment;
 import com.example.graciosa.kidsassistant.fragments.SettingsFragment;
 
@@ -50,6 +51,7 @@ public class MainActivity extends AppCompatActivity {
     final String INST_DATA_KEY_FRAG = "key_frag";
     final String TAG_FRAG_SETTINGS = "frag_settings";
     final String TAG_FRAG_PIE_CHART = "frag_pie_chart";
+    final String TAG_FRAG_HISTORY = "frag_history";
 
     /***************
      *** FIELDS ***
@@ -59,6 +61,7 @@ public class MainActivity extends AppCompatActivity {
     private FragmentManager mFragMgr;
     private SettingsFragment mSettingsFragment;
     private PieChartFragment mPieChartFragment;
+    private HistoryFragment mHistoryFragment;
 
     /***************
      *** METHODS ***
@@ -80,6 +83,7 @@ public class MainActivity extends AppCompatActivity {
         mFragMgr = getSupportFragmentManager();
         mPieChartFragment = new PieChartFragment();
         mSettingsFragment = new SettingsFragment();
+        mHistoryFragment = new HistoryFragment();
         setContentView(R.layout.activity_main);
 
         if (savedInstanceState == null) {
@@ -99,6 +103,9 @@ public class MainActivity extends AppCompatActivity {
                 case TAG_FRAG_SETTINGS:
                     addFragSettings();
                     break;
+                case TAG_FRAG_HISTORY:
+                    addFragHistory();
+                    break;
             }
         }
     }
@@ -112,6 +119,12 @@ public class MainActivity extends AppCompatActivity {
     private void addFragSettings(){
         mFragMgr.beginTransaction()
                 .add(R.id.main_activity_container, mSettingsFragment, TAG_FRAG_SETTINGS)
+                .commit();
+    }
+
+    private void addFragHistory(){
+        mFragMgr.beginTransaction()
+                .add(R.id.main_activity_container, mHistoryFragment, TAG_FRAG_HISTORY)
                 .commit();
     }
 
@@ -178,6 +191,19 @@ public class MainActivity extends AppCompatActivity {
                 // Display the fragment as the main content.
                 mFragMgr.beginTransaction()
                         .replace(R.id.main_activity_container, mSettingsFragment, TAG_FRAG_SETTINGS)
+                        .commit();
+                // Set back button in action bar
+                getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+                // Trigger removal of options menu
+                mShowOptionMenu = false;
+                invalidateOptionsMenu();
+                return true;
+
+            case R.id.history_id:
+                MyLog.d(TAG, "History menu item selected");
+                // Display the fragment as the main content.
+                mFragMgr.beginTransaction()
+                        .replace(R.id.main_activity_container, mHistoryFragment, TAG_FRAG_HISTORY)
                         .commit();
                 // Set back button in action bar
                 getSupportActionBar().setDisplayHomeAsUpEnabled(true);
