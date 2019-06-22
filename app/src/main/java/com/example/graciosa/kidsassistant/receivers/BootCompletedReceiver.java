@@ -35,16 +35,6 @@ public class BootCompletedReceiver extends BroadcastReceiver {
         String log = sb.toString();
         MyLog.d(TAG, log);
 
-        /*
-        // Create job to compute elapsed time
-        JobInfo job = new JobInfo.Builder(Constants.TIME_STEP_JOB_ID,
-                new ComponentName(context, TimeStepJobService.class))
-                .setPeriodic(Constants.INTERVAL)
-                .build();
-        JobScheduler js = (JobScheduler) context.getSystemService(Context.JOB_SCHEDULER_SERVICE);
-        js.schedule(job);
-        */
-
         MySharedPrefManager sp = new MySharedPrefManager(context);
 
         if (!sp.isComputingPlayingTime()){
