@@ -10,6 +10,9 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 
+import com.example.graciosa.kidsassistant.fragments.PieChartFragment;
+import com.example.graciosa.kidsassistant.fragments.SettingsFragment;
+
 import java.util.List;
 
 /*****

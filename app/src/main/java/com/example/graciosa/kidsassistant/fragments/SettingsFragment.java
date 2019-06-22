@@ -1,9 +1,13 @@
-package com.example.graciosa.kidsassistant;
+package com.example.graciosa.kidsassistant.fragments;
 
 import androidx.preference.PreferenceFragmentCompat;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
 import android.os.Bundle;
+
+import com.example.graciosa.kidsassistant.MyAlarmManager;
+import com.example.graciosa.kidsassistant.MySharedPrefManager;
+import com.example.graciosa.kidsassistant.R;
 
 import static com.example.graciosa.kidsassistant.Constants.INTERVAL;
 import static com.example.graciosa.kidsassistant.MySharedPrefManager.SHARED_PREF_SETTINGS_COMPUTE_PLAYING_TIME_KEY;

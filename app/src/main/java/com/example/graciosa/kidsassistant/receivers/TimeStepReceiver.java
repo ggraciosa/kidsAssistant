@@ -1,4 +1,4 @@
-package com.example.graciosa.kidsassistant;
+package com.example.graciosa.kidsassistant.receivers;
 
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -6,6 +6,10 @@ import android.content.Intent;
 import android.os.Build;
 import android.os.PowerManager;
 
+import com.example.graciosa.kidsassistant.MyLog;
+import com.example.graciosa.kidsassistant.MyNotificationManager;
+import com.example.graciosa.kidsassistant.MySharedPrefManager;
+import com.example.graciosa.kidsassistant.Utils;
 import com.example.graciosa.kidsassistant.db.PlayedTimeDao;
 import com.example.graciosa.kidsassistant.db.PlayedTimeDatabase;
 import com.example.graciosa.kidsassistant.db.PlayedTimeDatabaseSingleton;

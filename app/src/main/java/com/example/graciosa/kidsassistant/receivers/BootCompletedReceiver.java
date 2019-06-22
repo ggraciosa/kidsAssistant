@@ -1,4 +1,4 @@
-package com.example.graciosa.kidsassistant;
+package com.example.graciosa.kidsassistant.receivers;
 
 import android.app.AlarmManager;
 import android.app.PendingIntent;
@@ -18,6 +18,9 @@ import com.example.graciosa.kidsassistant.Constants;
 //import androidx.work.WorkManager;
 
 import com.example.graciosa.kidsassistant.Constants;
+import com.example.graciosa.kidsassistant.MyAlarmManager;
+import com.example.graciosa.kidsassistant.MyLog;
+import com.example.graciosa.kidsassistant.MySharedPrefManager;
 
 import static com.example.graciosa.kidsassistant.Constants.INTERVAL;
 

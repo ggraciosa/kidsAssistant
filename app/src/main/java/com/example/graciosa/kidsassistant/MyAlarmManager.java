@@ -6,6 +6,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.SystemClock;
 
+import com.example.graciosa.kidsassistant.receivers.TimeStepReceiver;
+
 import static com.example.graciosa.kidsassistant.Constants.INTERVAL;
 
 public class MyAlarmManager {

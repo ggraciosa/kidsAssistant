@@ -4,7 +4,7 @@ import android.util.Log;
 
 public class MyLog {
 
-    static void d (String tag, String log){
+    public static void d (String tag, String log){
         Log.d(prependAppTag(tag), log);
     }
 
