@@ -23,19 +23,28 @@ public class TimeStepReceiver extends BroadcastReceiver {
     private class ProcessTimeStepThread extends Thread {
 
         private Context mContext;
+        private boolean mPlaying;
+        private boolean mNewDay;
 
-        public ProcessTimeStepThread(Context context) {
+        /*
+         * context: application context
+         * newDay: date has changed, playing info must be reset
+         * playing: kids are currently playing, time step must be computed
+         */
+        public ProcessTimeStepThread(Context context, boolean newDay, boolean playing) {
             mContext = context;
+            mNewDay = newDay;
+            mPlaying = playing;
         }
 
         @Override
         public void run() {
 
-            MyLog.d(TAG, "ProcessTimeStepThread");
+            MyLog.d(TAG, "ProcessTimeStepThread: newDay=" + mNewDay + ", playing=" + mPlaying);
 
             MySharedPrefManager sp = new MySharedPrefManager(mContext);
 
-            if (sp.hasDateChanged()) {
+            if (mNewDay) {
                 // It is a new day: change date and set max play time for the new date
                 sp.setPlayingDate();
                 sp.setWeekdayPlayTimeLimitOnce();
@@ -44,7 +53,10 @@ public class TimeStepReceiver extends BroadcastReceiver {
                 sp.resetPlayedTime();
             }
 
-            sp.updatePlayedTime();
+            if (mPlaying) {
+                // Kids are playing, compute playing time
+                sp.updatePlayedTime();
+            }
 
             long minutesPlayed = sp.getPlayedTimeInMinutes();
             long minutesLimit = sp.getPlayTimeLimitInMinutes();
@@ -72,21 +84,24 @@ public class TimeStepReceiver extends BroadcastReceiver {
                 notif.postTimeout(mContext, (int) minutesOvertime);
             }
 
-            // Save in database
-            PlayedTimeDatabase db = PlayedTimeDatabaseSingleton.getInstance(mContext).getDatabase();
-            PlayedTimeDao dao = db.playedTimeDao();
-            PlayedTimeEntity entity = new PlayedTimeEntity();
-            String date = Utils.getCurrentDate();
-            entity.setDate(date);
-            entity.setPlayed((int) minutesPlayed);
-            entity.setLimit((int) minutesLimit);
-            if (dao.countByDate(date) == 0){
-                // No today record yet, add it
-                MyLog.d(TAG, "ProcessTimeStepThread: insert");
-                dao.insert(entity);
-            } else {
-                MyLog.d(TAG, "ProcessTimeStepThread: update");
-                dao.update(entity);
+            if (mPlaying) {
+                // Save playing time update in database
+                PlayedTimeDatabase db = PlayedTimeDatabaseSingleton.getInstance(mContext).getDatabase();
+                PlayedTimeDao dao = db.playedTimeDao();
+                PlayedTimeEntity entity = new PlayedTimeEntity();
+                String date = Utils.getCurrentDate();
+                entity.setDate(date);
+                entity.setPlayed((int) minutesPlayed);
+                entity.setLimit((int) minutesLimit);
+                if (dao.countByDate(date) == 0) {
+                    // No today record yet, add it
+                    MyLog.d(TAG, "ProcessTimeStepThread: insert");
+                    dao.insert(entity);
+                } else {
+                    MyLog.d(TAG, "ProcessTimeStepThread: update");
+                    dao.update(entity);
+                }
+
             }
         }
 
@@ -96,27 +111,29 @@ public class TimeStepReceiver extends BroadcastReceiver {
     public void onReceive(Context context, Intent intent) {
 
         MySharedPrefManager sp = new MySharedPrefManager(context);
+        boolean newDay = sp.hasDateChanged();
+        boolean playing = true;
 
         if (!isInteractive(context)) {
-            // Kids are not interacting with the device: do not compute playing time.
+            // Kids are not interacting with the device
             // Reset elapsed playing time reference
             sp.resetElapsedPlayedTime();
-            MyLog.d(TAG, "Kids are not interacting: do not compute playing time");
-            return;
+            MyLog.d(TAG, "Kids are not interacting");
+            playing = false;
         }
 
         if (!sp.isComputingPlayingTime()) {
-            // Computing time is off in settings: do not compute playing time
+            // Computing time is off in settings
             // Reset elapsed playing time reference
             sp.resetElapsedPlayedTime();
-            MyLog.d(TAG, "Time computation is switched off: do not compute playing time");
-            return;
+            MyLog.d(TAG, "Time computation setting is switched off");
+            playing = false;
         }
 
-        // Kids are interacting with the device, perform remaining processing in background
-        new ProcessTimeStepThread(context).start();
-
-        MyLog.d(TAG, "onReceive: started ProcessTimeStepThread");
+        if (newDay || playing){
+            // Kids are interacting with the device, perform remaining processing in background
+            new ProcessTimeStepThread(context, newDay, playing).start();
+        }
 
     }
 

@@ -18,7 +18,7 @@ import java.util.ArrayList;
 
 public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.ViewHolder> {
 
-    private static final String TAG = "HistoryAdapter";
+    private static final String TAG = HistoryAdapter.class.getSimpleName();
 
     private ArrayList<BarData> mList;
 
