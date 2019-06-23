@@ -1,10 +1,13 @@
 package com.example.graciosa.kidsassistant.fragments;
 
+import android.content.Context;
 import android.graphics.Color;
+import android.os.Build;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import androidx.annotation.RequiresApi;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.graciosa.kidsassistant.MyLog;
@@ -18,9 +21,22 @@ import java.util.ArrayList;
 
 public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.ViewHolder> {
 
+    /*****************
+     *** CONSTANTS ***
+     *****************/
+
     private static final String TAG = HistoryAdapter.class.getSimpleName();
 
+    /**************
+     *** FIELDS ***
+     **************/
+
+    private Context mContext;
     private ArrayList<BarData> mList;
+
+    /*********************
+     *** INNER CLASSES ***
+     *********************/
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
 
@@ -43,9 +59,15 @@ public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.ViewHold
         }
     }
 
-    public HistoryAdapter(ArrayList<BarData> list) {
+    public HistoryAdapter(ArrayList<BarData> list, Context context) {
+
         mList = list;
+        mContext = context;
     }
+
+    /***************
+     *** METHODS ***
+     ***************/
 
     // Create new views (invoked by the layout manager)
     @Override
@@ -59,6 +81,7 @@ public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.ViewHold
     }
 
     // Replace the contents of a view (invoked by the layout manager)
+    @RequiresApi(api = Build.VERSION_CODES.M)
     @Override
     public void onBindViewHolder(ViewHolder viewHolder, final int position) {
 
@@ -69,7 +92,8 @@ public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.ViewHold
 
         // Apply styling
         //data.setValueTypeface(tfLight);
-        data.setValueTextColor(Color.BLACK);
+        //data.setValueTextColor(Color.CYAN);
+        data.setValueTextColor(mContext.getResources().getColor(R.color.colorAccent, null));
 
         // Get content container
         BarChart holder = viewHolder.getBarChartView();
@@ -79,19 +103,25 @@ public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.ViewHold
         holder.setDrawGridBackground(false);
 
         XAxis xAxis = holder.getXAxis();
+
+        int axisLineColor = xAxis.getAxisLineColor();
+
         xAxis.setPosition(XAxis.XAxisPosition.BOTTOM);
         //xAxis.setTypeface(tfLight);
         xAxis.setDrawGridLines(false);
+        xAxis.setTextColor(axisLineColor);
 
         YAxis leftAxis = holder.getAxisLeft();
         //leftAxis.setTypeface(tfLight);
-        leftAxis.setLabelCount(5, false);
+        leftAxis.setLabelCount(6, false);
         leftAxis.setSpaceTop(15f);
+        leftAxis.setTextColor(axisLineColor);
 
         YAxis rightAxis = holder.getAxisRight();
         //rightAxis.setTypeface(tfLight);
-        rightAxis.setLabelCount(5, false);
+        rightAxis.setLabelCount(6, false);
         rightAxis.setSpaceTop(15f);
+        rightAxis.setTextColor(axisLineColor);
 
         // Set data
         holder.setData(data);

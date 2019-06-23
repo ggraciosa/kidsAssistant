@@ -14,8 +14,12 @@ import com.example.graciosa.kidsassistant.R;
 import com.github.mikephil.charting.data.BarData;
 import com.github.mikephil.charting.data.BarDataSet;
 import com.github.mikephil.charting.data.BarEntry;
+import com.github.mikephil.charting.data.Entry;
+import com.github.mikephil.charting.formatter.IAxisValueFormatter;
+import com.github.mikephil.charting.formatter.IValueFormatter;
 import com.github.mikephil.charting.interfaces.datasets.IBarDataSet;
 import com.github.mikephil.charting.utils.ColorTemplate;
+import com.github.mikephil.charting.utils.ViewPortHandler;
 
 import java.util.ArrayList;
 
@@ -27,6 +31,7 @@ public class HistoryFragment extends Fragment {
      *****************/
 
     private static final int LIST_SIZE = 20;
+    private static final float BAR_TEXT_SIZE = 10f;
 
     /**************
      *** FIELDS ***
@@ -35,6 +40,22 @@ public class HistoryFragment extends Fragment {
     protected ArrayList<BarData> mList;
     // RecyclerView list. Requests view as user scrolls in list, in an efficient way.
     protected RecyclerView mRecyclerView;
+
+    /*********************
+     *** INNER CLASSES ***
+     *********************/
+
+    public class IntegerFormatter implements IValueFormatter {
+
+        @Override
+        public String getFormattedValue(float value,
+                                        Entry entry,
+                                        int dataSetIndex,
+                                        ViewPortHandler viewPortHandler) {
+            Integer v = (int) value;
+            return v.toString();
+        }
+    }
 
     /***************
      *** METHODS ***
@@ -70,7 +91,7 @@ public class HistoryFragment extends Fragment {
 
         // Set the adapter for RecyclerView list.
         // The adapter provides views to RecyclerView's layout manager as user scrolls the list.
-        mRecyclerView.setAdapter(new HistoryAdapter(mList));
+        mRecyclerView.setAdapter(new HistoryAdapter(mList, getContext()));
 
         return rootView;
     }
@@ -91,10 +112,17 @@ public class HistoryFragment extends Fragment {
         ArrayList<BarEntry> entries = new ArrayList<>();
 
         for (int i = 0; i < 12; i++) {
-            entries.add(new BarEntry(i, (float) (Math.random() * 70) + 30));
+            BarEntry entry = new BarEntry(i, (float) (Math.random() * 70) + 30);
+            entries.add(entry);
         }
 
+        // TODO: replace chart label with beginning and end date
         BarDataSet d = new BarDataSet(entries, "New DataSet " + cnt);
+        // Display values at the top of the bars as integers (no decimal digits)
+        d.setValueFormatter(new IntegerFormatter());
+        // Set size of values at the top of the bars
+        d.setValueTextSize(BAR_TEXT_SIZE);
+
         d.setColors(ColorTemplate.VORDIPLOM_COLORS);
         d.setBarShadowColor(Color.rgb(203, 203, 203));
 
