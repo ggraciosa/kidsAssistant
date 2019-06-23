@@ -1,14 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="@dimen/list_item_height"
+    android:layout_height="@dimen/bar_chart_item_height"
     android:layout_marginLeft="@dimen/margin_medium"
     android:layout_marginRight="@dimen/margin_medium"
     android:gravity="center_vertical">
 
-    <TextView
-        android:id="@+id/textView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/element_text"/>
+    <com.github.mikephil.charting.charts.BarChart
+        android:id="@+id/list_item_bar_chart"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
 </FrameLayout>

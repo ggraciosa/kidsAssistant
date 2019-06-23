@@ -1,5 +1,6 @@
 package com.example.graciosa.kidsassistant.fragments;
 
+import android.graphics.Color;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -10,6 +11,13 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.graciosa.kidsassistant.R;
+import com.github.mikephil.charting.data.BarData;
+import com.github.mikephil.charting.data.BarDataSet;
+import com.github.mikephil.charting.data.BarEntry;
+import com.github.mikephil.charting.interfaces.datasets.IBarDataSet;
+import com.github.mikephil.charting.utils.ColorTemplate;
+
+import java.util.ArrayList;
 
 
 public class HistoryFragment extends Fragment {
@@ -18,13 +26,13 @@ public class HistoryFragment extends Fragment {
      *** CONSTANTS ***
      *****************/
 
-    private static final int DATASET_COUNT = 60;
+    private static final int LIST_SIZE = 20;
 
     /**************
      *** FIELDS ***
      **************/
 
-    protected String[] mDataset;
+    protected ArrayList<BarData> mList;
     // RecyclerView list. Requests view as user scrolls in list, in an efficient way.
     protected RecyclerView mRecyclerView;
 
@@ -39,14 +47,14 @@ public class HistoryFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        initDataset();
+        initList(LIST_SIZE);
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        View rootView = inflater.inflate(R.layout.fragment_history, container, false);
+        View rootView = inflater.inflate(R.layout.fragment_history_list, container, false);
 
         mRecyclerView = (RecyclerView) rootView.findViewById(R.id.recyclerView);
 
@@ -62,15 +70,40 @@ public class HistoryFragment extends Fragment {
 
         // Set the adapter for RecyclerView list.
         // The adapter provides views to RecyclerView's layout manager as user scrolls the list.
-        mRecyclerView.setAdapter(new HistoryAdapter(mDataset));
+        mRecyclerView.setAdapter(new HistoryAdapter(mList));
 
         return rootView;
     }
 
-    private void initDataset() {
-        mDataset = new String[DATASET_COUNT];
-        for (int i = 0; i < DATASET_COUNT; i++) {
-            mDataset[i] = "This is element #" + i;
+    private void initList(int cnt) {
+        mList = new ArrayList<>();
+        for (int i = 0; i < cnt; i++) {
+            mList.add(generateData(i + 1));
         }
     }
+
+    /**
+     * Generates a random ChartData object with just one DataSet
+     * @return Bar data
+     */
+    private BarData generateData(int cnt) {
+
+        ArrayList<BarEntry> entries = new ArrayList<>();
+
+        for (int i = 0; i < 12; i++) {
+            entries.add(new BarEntry(i, (float) (Math.random() * 70) + 30));
+        }
+
+        BarDataSet d = new BarDataSet(entries, "New DataSet " + cnt);
+        d.setColors(ColorTemplate.VORDIPLOM_COLORS);
+        d.setBarShadowColor(Color.rgb(203, 203, 203));
+
+        ArrayList<IBarDataSet> sets = new ArrayList<>();
+        sets.add(d);
+
+        BarData cd = new BarData(sets);
+        cd.setBarWidth(0.9f);
+        return cd;
+    }
+
 }

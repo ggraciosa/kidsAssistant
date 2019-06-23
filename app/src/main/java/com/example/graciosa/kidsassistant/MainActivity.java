@@ -38,6 +38,7 @@ import java.util.List;
  * 18. Bug: invalid default shared preference (computePlayingTime=true, maxPlayingTime=120) is brought
  *     when install App in my Z3 Play P multi user; cleaning app data from Global Settings solves the
  *     issue; issue does not happen in Z2 Play N single user neither G2 M single user.
+ * 19. Set new data and reset time played upon midnight, even if device is no active.
  */
 
 public class MainActivity extends AppCompatActivity {

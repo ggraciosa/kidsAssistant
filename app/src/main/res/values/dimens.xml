@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <dimen name="list_item_height">72dp</dimen>
+    <dimen name="bar_chart_item_height">200dp</dimen>
     <dimen name="margin_medium">16dp</dimen>
 </resources>
