@@ -1,7 +1,6 @@
 package com.example.graciosa.kidsassistant.fragments;
 
 import android.content.Context;
-import android.graphics.Color;
 import android.os.Build;
 import android.view.LayoutInflater;
 import android.view.View;

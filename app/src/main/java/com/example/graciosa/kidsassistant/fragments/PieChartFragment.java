@@ -73,7 +73,7 @@ public class PieChartFragment extends Fragment {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             // API level >= 23
             dataSet.setColors(getResources().getColor(R.color.colorAccent, null),
-                    getResources().getColor(R.color.colorAccentAlpha40, null));
+                    getResources().getColor(R.color.colorLightGrey, null));
         } else {
             // API level < 23
             dataSet.setColors(ColorTemplate.PASTEL_COLORS);
