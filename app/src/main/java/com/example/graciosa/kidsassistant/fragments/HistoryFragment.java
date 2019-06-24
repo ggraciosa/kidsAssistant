@@ -37,7 +37,6 @@ public class HistoryFragment extends Fragment {
      *****************/
 
     final String TAG = TimeStepReceiver.class.getSimpleName();
-    private static final int LIST_SIZE = 20;
     private static final float BAR_TEXT_SIZE = 10f;
     private static final int BARS_PER_CHART = 12;
 
@@ -48,7 +47,7 @@ public class HistoryFragment extends Fragment {
     protected ArrayList<BarData> mList;
     // RecyclerView list. Requests view as user scrolls in list, in an efficient way.
     protected RecyclerView mRecyclerView;
-    protected BarChartsDataBuilderAsyncTask asyncTask;
+    protected ArrayList<PlayedTimeEntity> mEntities;
 
     /*********************
      *** INNER CLASSES ***
@@ -75,23 +74,31 @@ public class HistoryFragment extends Fragment {
         @Override
         protected ArrayList<BarData> doInBackground(Void... voids){
 
+            MyLog.d(TAG,"doInBackground begin");
+
             // Get total number of records in database
             PlayedTimeDatabase db =
                     PlayedTimeDatabaseSingleton.getInstance(getContext()).getDatabase();
             PlayedTimeDao dao = db.playedTimeDao();
             int totalRecords = dao.countAll();
+            MyLog.d(TAG,"doInBackground: totalRecords=" + totalRecords);
+
+            // Get all records from database
+            mEntities = (ArrayList<PlayedTimeEntity>) dao.getAll();
 
             // Calculate the number of charts
-            int chartsCnt = (int) Math.ceil(totalRecords / BARS_PER_CHART);
+            int chartsCnt = (int) Math.ceil(totalRecords / (double) BARS_PER_CHART);
+            MyLog.d(TAG,"doInBackground: chartsCnt=" + chartsCnt);
 
             // Build each chart's data
             ArrayList<BarData> list = new ArrayList<>();
-            // TODO: replace LIST_SIZE with chartsCnt
-            for (int i = 0; i < LIST_SIZE; i++) {
-                list.add(buildBarData(i));
+            for (int i = 0; i < chartsCnt; i++) {
+                list.add(buildChartData(i));
             }
 
             // Return chart list to system
+            MyLog.d(TAG,"doInBackground end");
+
             return list;
         }
     }
@@ -110,6 +117,7 @@ public class HistoryFragment extends Fragment {
         //initList(LIST_SIZE);
         // Execute async task to load data from database, wait until it is done
         // TODO: we may not block here and check async task status in onCreateView but how to wait there if not done?
+        MyLog.d(TAG,"onCreate begin");
         try {
             mList = new BarChartsDataBuilderAsyncTask().execute().get();
         } catch (ExecutionException e) {
@@ -117,11 +125,15 @@ public class HistoryFragment extends Fragment {
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
+        MyLog.d(TAG,"onCreate end");
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+
+        MyLog.d(TAG,"onCreateView begin");
+
         // Inflate the layout for this fragment
         View rootView = inflater.inflate(R.layout.fragment_history_list, container, false);
 
@@ -141,26 +153,27 @@ public class HistoryFragment extends Fragment {
         // The adapter provides views to RecyclerView's layout manager as user scrolls the list.
         mRecyclerView.setAdapter(new HistoryAdapter(mList, getContext()));
 
+        MyLog.d(TAG,"onCreateView end");
+
         return rootView;
     }
 
-    private void initList(int cnt) {
-        mList = new ArrayList<>();
-        for (int i = 0; i < cnt; i++) {
-            mList.add(buildBarData(i));
-        }
-    }
-
     /*
-     * listItem: chart item in chart list i.e. 1, 2, 3, etc
+     * chartPosition: chart item in chart list i.e. 0, 1, 2, 3, etc
      */
-    private BarData buildBarData(int listItem){
+    private BarData buildChartData(int chartPosition){
 
-        ArrayList<PlayedTimeEntity> entities = getEntities(listItem);
+        int offset = chartPosition * BARS_PER_CHART;
+        ArrayList<PlayedTimeEntity> entities = getEntitiesSlice(offset);
+        //int count = entities.size();
+        // Calculate the end of entities slice
+        int count = entities.size();
+
         ArrayList<BarEntry> entries = new ArrayList<>();
 
+        MyLog.d(TAG,"buildChartData entities.size =" + entities.size());
         // Set value of each bar
-        for (int i = 0; i < BARS_PER_CHART; i++) {
+        for (int i = 0; i < count; i++) {
             BarEntry entry = new BarEntry(i, entities.get(i).getPlayed());
             entries.add(entry);
         }
@@ -177,8 +190,8 @@ public class HistoryFragment extends Fragment {
         // Set color of each bar
         int colorAccent = getResources().getColor(R.color.colorAccent);
         int colorOrange = getResources().getColor(R.color.colorOrange);
-        int colors[] = new int[BARS_PER_CHART];
-        for (int i = 0; i < BARS_PER_CHART; i++){
+        int colors[] = new int[count];
+        for (int i = 0; i < count; i++){
             if (entities.get(i).getPlayed() <= entities.get(i).getLimit()){
                 // Played time within limit
                 colors[i] = colorAccent;
@@ -196,61 +209,25 @@ public class HistoryFragment extends Fragment {
         BarData bd = new BarData(sets);
         bd.setBarWidth(0.9f);
         return bd;
-
     }
 
-
-    /* TODO: RETRIEVE ACTUAL ENTITIES FROM DATABASE
-     * offset: number of heading BARS_PER_CHART entities to be skipped
+    /*
+     * offset: number of heading entities to be skipped
      */
-    private ArrayList<PlayedTimeEntity> getEntities(int offset){
+    private ArrayList<PlayedTimeEntity> getEntitiesSlice(int offset){
 
         ArrayList<PlayedTimeEntity> entities = new ArrayList<>();
 
-        for (int i = 0; i < BARS_PER_CHART; i++) {
-            PlayedTimeEntity entity = new PlayedTimeEntity();
-            entity.setDate("2019-06-23");
-            entity.setPlayed((int) (Math.random() * 100));
-            entity.setLimit(50);
-            entities.add(entity);
+        // Calculate the end of entities slice
+        int end = offset + Math.min(mEntities.size() - offset, BARS_PER_CHART);
+        MyLog.d(TAG,"getEntitiesSlice: mEntities.size=" + mEntities.size());
+        MyLog.d(TAG,"getEntitiesSlice: offset=" + offset);
+        MyLog.d(TAG,"getEntitiesSlice: end=" + end);
+
+        for (int i = offset; i < end; i++) {
+            entities.add(mEntities.get(i));
+            MyLog.d(TAG,"getEntitiesSlice: i=" + i);
         }
         return entities;
     }
-
-    /**
-     * Generates a random ChartData object with just one DataSet
-     * @return Bar data
-     */
-    private BarData generateData(int cnt) {
-
-        ArrayList<BarEntry> entries = new ArrayList<>();
-
-        for (int i = 0; i < BARS_PER_CHART; i++) {
-            BarEntry entry = new BarEntry(i, (float) (Math.random() * 70) + 30);
-            entries.add(entry);
-        }
-
-        // TODO: replace chart label with beginning and end date
-        BarDataSet d = new BarDataSet(entries, "New DataSet " + cnt);
-        // Display values at the top of each bar as integers (no decimal digits)
-        d.setValueFormatter(new IntegerFormatter());
-        // Set size of values at the top of each bar
-        d.setValueTextSize(BAR_TEXT_SIZE);
-        // Set color of each bar
-        int colorAccent = getResources().getColor(R.color.colorAccent);
-        int colorOrange = getResources().getColor(R.color.colorOrange);
-        int[] colors = {colorAccent, colorOrange, colorAccent, colorOrange,
-                colorAccent, colorOrange, colorAccent, colorOrange,
-                colorAccent, colorOrange, colorAccent, colorOrange,};
-        d.setColors(colors);
-        d.setBarShadowColor(Color.rgb(203, 203, 203));
-
-        ArrayList<IBarDataSet> sets = new ArrayList<>();
-        sets.add(d);
-
-        BarData cd = new BarData(sets);
-        cd.setBarWidth(0.9f);
-        return cd;
-    }
-
 }

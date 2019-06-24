@@ -27,19 +27,22 @@ import java.util.List;
  * 7. done - git hub
  * 8. done - store daily played time in database
  * 9. done - Fix orientation change bug
- * 10. Pause button in notification?
+ * 10. Add pause button in notification and a setting to display it or not
  * 11. Pie chart: center text; handle overtime (colors, layout); change notification overtime colors to match it
  * 12. done - handle clock changes e.g. entering and exiting daylight saving time
  * 13. done - execute receiver in a background thread
  * 14. done - Heads up notif does not work in M
  * 15. display selected values in preference
  * 16. Settings action bar back navigation arrow is lost upon rotation
- * 17. Display played time statistics
+ * 17. done - Display played time statistics
  * 18. Bug: invalid default shared preference (computePlayingTime=true, maxPlayingTime=120) is brought
  *     when install App in my Z3 Play P multi user; cleaning app data from Global Settings solves the
  *     issue; issue does not happen in Z2 Play N single user neither G2 M single user.
  * 19. done - Set new data and reset time played upon midnight, even if device is no active.
  * 20. Replace Fragment class deprecated in API level 28
+ * 21. Make bar value color follow bar color.
+ * 22. Set chart subtitiles to something useful: dates or start and end date of that chart?
+ * 23. Add action to bar touch e.g. display data, playedTime and limit?
  */
 
 public class MainActivity extends AppCompatActivity {
