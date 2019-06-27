@@ -37,7 +37,7 @@ public class HistoryFragment extends Fragment {
      *****************/
 
     final String TAG = TimeStepReceiver.class.getSimpleName();
-    private static final float BAR_TEXT_SIZE = 10f;
+    private static final float BAR_TEXT_SIZE = 11f;
     private static final int BARS_PER_CHART = 12;
 
     /**************
@@ -165,21 +165,24 @@ public class HistoryFragment extends Fragment {
 
         int offset = chartPosition * BARS_PER_CHART;
         ArrayList<PlayedTimeEntity> entities = getEntitiesSlice(offset);
-        //int count = entities.size();
-        // Calculate the end of entities slice
+        // Get entities slice size
         int count = entities.size();
 
         ArrayList<BarEntry> entries = new ArrayList<>();
+        ArrayList<String> dates = new ArrayList<>();
 
         MyLog.d(TAG,"buildChartData entities.size =" + entities.size());
-        // Set value of each bar
         for (int i = 0; i < count; i++) {
+            // Get value of each bar
             BarEntry entry = new BarEntry(i, entities.get(i).getPlayed());
             entries.add(entry);
+            // Get dates
+            dates.add(entities.get(i).getDate());
         }
 
-        // TODO: replace chart label with beginning and end date
-        BarDataSet d = new BarDataSet(entries, "TODO: give me a label");
+        // Set subtitle to start and end dates of this chart
+        String legend = dates.get(count-1) + " ... " + dates.get(0);
+        BarDataSet d = new BarDataSet(entries, legend);
 
         // Set values to be displayed at the top of each bar as integers (no decimal digits)
         d.setValueFormatter(new IntegerFormatter());
@@ -202,6 +205,13 @@ public class HistoryFragment extends Fragment {
         }
         d.setColors(colors);
         d.setBarShadowColor(Color.rgb(203, 203, 203));
+
+        // Set color of text on top of each bar
+        ArrayList<Integer> colorList = new ArrayList<>();
+        for (int i = 0; i < count; i++){
+            colorList.add(colors[i]);
+        }
+        d.setValueTextColors(colorList);
 
         ArrayList<IBarDataSet> sets = new ArrayList<>();
         sets.add(d);

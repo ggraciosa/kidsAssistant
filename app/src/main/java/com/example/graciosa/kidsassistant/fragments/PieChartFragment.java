@@ -24,13 +24,17 @@ import java.util.ArrayList;
 
 public class PieChartFragment extends Fragment {
 
+    private MySharedPrefManager mSp;
+
     public PieChartFragment() {
         // Required empty public constructor
     }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
+
         super.onCreate(savedInstanceState);
+        mSp = new MySharedPrefManager(getActivity());
     }
 
     @Override
@@ -53,27 +57,36 @@ public class PieChartFragment extends Fragment {
         pieChart.setHoleColor(Color.TRANSPARENT);
         pieChart.animateY(1000, Easing.EasingOption.EaseInOutCubic);
 
-        // set text on top of the pie
+        // Set text on top of the pie
         pieChart.setEntryLabelColor(Color.DKGRAY);
         pieChart.setEntryLabelTextSize(16f);
 
-        // set pie pieces
-        MySharedPrefManager sp = new MySharedPrefManager(getActivity());
-        long playedTime = sp.getPlayedTimeInMinutes();
-        long maxPlayingTime = sp.getPlayTimeLimitInMinutes();
-        playedTime = Math.min((int) playedTime, (int) maxPlayingTime);
-        long remainingTime = maxPlayingTime - playedTime;
+        // Set pie pieces
+        long playedTime = mSp.getPlayedTimeInMinutes();
+        long playTimeLimit = mSp.getPlayTimeLimitInMinutes();
+        long playedTimePie = Math.min((int) playedTime, (int) playTimeLimit);
+        long remainingTimePie = playTimeLimit - playedTimePie;
         ArrayList<PieEntry> yValues = new ArrayList<>();
-        yValues.add(new PieEntry((float) playedTime, "Played"));
-        yValues.add(new PieEntry((float) remainingTime, "Remaining"));
+        yValues.add(new PieEntry(playedTimePie, "Played"));
+        yValues.add(new PieEntry(remainingTimePie, "Remaining"));
 
         PieDataSet dataSet = new PieDataSet(yValues, null);
         dataSet.setSliceSpace(2f);
         dataSet.setSelectionShift(5f);
+
+        // Set pie color
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             // API level >= 23
-            dataSet.setColors(getResources().getColor(R.color.colorAccent, null),
+            if (playedTime <= playTimeLimit){
+                // Play time is within limit
+                dataSet.setColors(getResources().getColor(R.color.colorAccent, null),
                     getResources().getColor(R.color.colorLightGrey, null));
+            } else {
+                // Play time limit exceeded
+                dataSet.setColors(getResources().getColor(R.color.colorOrange, null),
+                        getResources().getColor(R.color.colorOrange, null));
+            }
+
         } else {
             // API level < 23
             dataSet.setColors(ColorTemplate.PASTEL_COLORS);
@@ -87,7 +100,6 @@ public class PieChartFragment extends Fragment {
         textColors.add(Color.LTGRAY);
         pieData.setValueTextColors(textColors);*/
         pieData.setValueTextColor(Color.DKGRAY);
-        //pieData.setValueTextColor(getResources().getColor(R.color.orange, null));
 
         pieChart.setData(pieData);
     }

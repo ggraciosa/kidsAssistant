@@ -58,30 +58,29 @@ public class TimeStepReceiver extends BroadcastReceiver {
                 sp.updatePlayedTime();
             }
 
-            long minutesPlayed = sp.getPlayedTimeInMinutes();
-            long minutesLimit = sp.getPlayTimeLimitInMinutes();
+            int played = (int) sp.getPlayedTimeInMinutes();
+            int limit = (int) sp.getPlayTimeLimitInMinutes();
 
-            int progress_max = (int) minutesLimit;
-            int progress_current = Math.min((int) minutesPlayed, (int) minutesLimit);
+            int progress_max = limit;
+            int progress_current = Math.min(played, limit);
 
             // Decide notification importance and post the notification
             MyNotificationManager notif = new MyNotificationManager(mContext);
             if (progress_current < progress_max) {
                 // There is still some time to play
-                int minutesRemaining = progress_max - progress_current;
                 int progressThreshold = sp.getProgressThresholdInMinutes();
                 float percent = (float) progress_current / progress_max;
                 if (Math.round(100 * percent) < progressThreshold) {
                     MyLog.d(TAG, "Notif priority: medium");
-                    notif.postProgressMediumImportance(mContext, minutesRemaining, progress_max, progress_current);
+                    notif.postProgressMediumImportance(mContext, progress_max, progress_current);
                 } else {
                     MyLog.d(TAG, "Notif priority: high");
-                    notif.postProgressHighImportance(mContext, minutesRemaining, progress_max, progress_current);
+                    notif.postProgressHighImportance(mContext, progress_max, progress_current);
                 }
             } else {
                 // Playing time is over
-                long minutesOvertime = minutesPlayed - minutesLimit;
-                notif.postTimeout(mContext, (int) minutesOvertime);
+                int minutesOvertime = played - limit;
+                notif.postTimeout(mContext, limit, played, minutesOvertime);
             }
 
             if (mPlaying) {
@@ -91,8 +90,8 @@ public class TimeStepReceiver extends BroadcastReceiver {
                 PlayedTimeEntity entity = new PlayedTimeEntity();
                 String date = Utils.getCurrentDate();
                 entity.setDate(date);
-                entity.setPlayed((int) minutesPlayed);
-                entity.setLimit((int) minutesLimit);
+                entity.setPlayed((int) played);
+                entity.setLimit((int) limit);
                 if (dao.countByDate(date) == 0) {
                     // No today record yet, add it
                     MyLog.d(TAG, "ProcessTimeStepThread: insert");

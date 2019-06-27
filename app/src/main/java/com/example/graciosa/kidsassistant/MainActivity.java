@@ -32,17 +32,25 @@ import java.util.List;
  * 12. done - handle clock changes e.g. entering and exiting daylight saving time
  * 13. done - execute receiver in a background thread
  * 14. done - Heads up notif does not work in M
- * 15. display selected values in preference
- * 16. Settings action bar back navigation arrow is lost upon rotation
+ * 15. Display selected values in preference
+ * 16. Bug: settings action bar back navigation arrow is lost upon rotation
  * 17. done - Display played time statistics
  * 18. Bug: invalid default shared preference (computePlayingTime=true, maxPlayingTime=120) is brought
  *     when install App in my Z3 Play P multi user; cleaning app data from Global Settings solves the
  *     issue; issue does not happen in Z2 Play N single user neither G2 M single user.
  * 19. done - Set new data and reset time played upon midnight, even if device is no active.
  * 20. Replace Fragment class deprecated in API level 28
- * 21. Make bar value color follow bar color.
- * 22. Set chart subtitiles to something useful: dates or start and end date of that chart?
+ * 21. done - Make bar value color follow bar color.
+ * 22. done - Set chart legend to start and end date of that chart.
  * 23. Add action to bar touch e.g. display data, playedTime and limit?
+ * 24. Display an explanation message in history when there is no data to be displayed.
+ * 25. Display integer numbers in chart Y axis.
+ * 26. Support light/dark/follow-system modes.
+ * 27. done - In notification, replace bottom "Kids Assistant" string with progress e.g. 23/60.
+ * 28. Update database and notification when daily limit is changed in settings.
+ * 29. Update pie and bar charts dynamically upon change via TimeStepReceiver.
+ * 30. done - Make notification icon colored (https://stackoverflow.com/questions/45874742/android-color-notification-icon).
+ * 31. Remove icons from barChart legend.
  */
 
 public class MainActivity extends AppCompatActivity {

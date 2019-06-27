@@ -3,6 +3,6 @@
     <color name="colorPrimary">#FF212121</color>
     <color name="colorPrimaryDark">#FF000000</color>
     <color name="colorAccent">#FF6FF9FF</color>
-    <color name="colorOrange">#FF6F00</color>
+    <color name="colorOrange">@android:color/holo_orange_dark</color>
     <color name="colorLightGrey">#EEEEEE</color>
 </resources>

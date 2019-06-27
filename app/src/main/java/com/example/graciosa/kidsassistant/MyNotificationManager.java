@@ -31,12 +31,16 @@ public class MyNotificationManager {
         createNotificationChannels(context);
     }
 
-    /* Posts regular notification in status bar*/
-    public void postProgressMediumImportance(Context context, int minutesRemaining, int progress_max, int progress_current){
-        NotificationCompat.Builder builder = buildBaseNotif(context, MID_IMPORTANCE_CHANNEL_ID);
+    /* Posts regular notification in status bar */
+    public void postProgressMediumImportance(Context context, int limit, int played){
+        NotificationCompat.Builder builder =
+                buildBaseNotif(context, MID_IMPORTANCE_CHANNEL_ID, limit, played);
         // Customize the notification
+        int minutesRemaining = limit - played;
         builder.setContentText(Long.toString(minutesRemaining) + " minutes left");
-        builder.setProgress(progress_max, progress_current, false);
+        builder.setProgress(limit, played, false);
+        builder.setColor(context.getResources().getColor(R.color.colorAccent));
+        builder.setColorized(true);
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
             // For API level < 26 there is no notif channel so importance attached to channel will
             // not be considered. Need to set priority here.
@@ -46,11 +50,15 @@ public class MyNotificationManager {
     }
 
     /* Posts the intrusive heads up notification */
-    public void postProgressHighImportance(Context context, int minutesRemaining, int progress_max, int progress_current){
-        NotificationCompat.Builder builder = buildBaseNotif(context, HIGH_IMPORTANCE_CHANNEL_ID);
+    public void postProgressHighImportance(Context context, int limit, int played){
+        NotificationCompat.Builder builder = buildBaseNotif(context, HIGH_IMPORTANCE_CHANNEL_ID,
+                limit, played);
         // Customize the notification
+        int minutesRemaining = limit - played;
         builder.setContentText(Long.toString(minutesRemaining) + " minutes left");
-        builder.setProgress(progress_max, progress_current, false);
+        builder.setProgress(limit, played, false);
+        builder.setColor(context.getResources().getColor(R.color.colorAccent));
+        builder.setColorized(true);
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
             // For API level < 26 there is no notif channel so importance attached to channel will not be considered.
             // For system to consider it high importance and display as heads up, both vibe and high priority must be set.
@@ -61,19 +69,21 @@ public class MyNotificationManager {
         post(context, builder);
     }
 
-    private NotificationCompat.Builder buildBaseNotif(Context context, String channelId){
+    private NotificationCompat.Builder buildBaseNotif(Context context, String channelId,
+                                                      int limit, int played){
         Intent intent = new Intent(context, MainActivity.class);
         PendingIntent pendingIntent = PendingIntent.getActivity(context, 0, intent, 0);
         NotificationCompat.Builder builder = new NotificationCompat.Builder(context, channelId)
                 .setSmallIcon(R.mipmap.ic_notif_hourglass)
-                .setContentTitle("Kids Assistant")
+                .setContentTitle(played + "/" + limit)
                 .setContentIntent(pendingIntent)
                 .setAutoCancel(true);
         return builder;
     }
 
-    public void postTimeout(Context context, int overtimeMinutes){
-        NotificationCompat.Builder builder = buildBaseNotif(context, HIGH_IMPORTANCE_CHANNEL_ID);
+    public void postTimeout(Context context, int limit, int played, long overtimeMinutes){
+        NotificationCompat.Builder builder =
+                buildBaseNotif(context, HIGH_IMPORTANCE_CHANNEL_ID, limit, played);
         // Customize the notification
         builder.setContentText("Timeout! " + overtimeMinutes + " min over");
         builder.setPriority(NotificationCompat.PRIORITY_HIGH);
@@ -82,6 +92,8 @@ public class MyNotificationManager {
         Uri uri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
         builder.setSound(uri);
         builder.setProgress(100, 100, false);
+        builder.setColor(context.getResources().getColor(R.color.colorOrange));
+        builder.setColorized(true);
         post(context, builder);
     }
 
