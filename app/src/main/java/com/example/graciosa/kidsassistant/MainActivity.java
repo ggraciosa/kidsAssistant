@@ -48,9 +48,10 @@ import java.util.List;
  * 26. Support light/dark/follow-system modes.
  * 27. done - In notification, replace bottom "Kids Assistant" string with progress e.g. 23/60.
  * 28. Update database and notification when daily limit is changed in settings.
- * 29. Update pie and bar charts dynamically upon change via TimeStepReceiver.
+ * 29. done - Update pie chart dynamically upon change via TimeStepReceiver.
  * 30. done - Make notification icon colored (https://stackoverflow.com/questions/45874742/android-color-notification-icon).
  * 31. Remove icons from barChart legend.
+ * 32. Update history charts dynamically upon change via TimeStepReceiver.
  */
 
 public class MainActivity extends AppCompatActivity {

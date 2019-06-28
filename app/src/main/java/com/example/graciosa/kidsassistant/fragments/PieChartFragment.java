@@ -1,5 +1,6 @@
 package com.example.graciosa.kidsassistant.fragments;
 
+import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
@@ -10,6 +11,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.example.graciosa.kidsassistant.MyLog;
 import com.example.graciosa.kidsassistant.MySharedPrefManager;
 import com.example.graciosa.kidsassistant.R;
 import com.github.mikephil.charting.animation.Easing;
@@ -24,7 +26,22 @@ import java.util.ArrayList;
 
 public class PieChartFragment extends Fragment {
 
-    private MySharedPrefManager mSp;
+    /*****************
+     *** CONSTANTS ***
+     *****************/
+
+    public static final String TAG = PieChartFragment.class.getSimpleName();
+
+    /**************
+     *** FIELDS ***
+     **************/
+
+    private MySharedPrefManager mMySp;
+    private SharedPreferences.OnSharedPreferenceChangeListener mListener;
+
+    /***************
+     *** METHODS ***
+     ***************/
 
     public PieChartFragment() {
         // Required empty public constructor
@@ -34,7 +51,26 @@ public class PieChartFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
 
         super.onCreate(savedInstanceState);
-        mSp = new MySharedPrefManager(getActivity());
+        mMySp = new MySharedPrefManager(getActivity());
+        mListener = new SharedPreferences.OnSharedPreferenceChangeListener() {
+            @Override
+            public void onSharedPreferenceChanged(SharedPreferences prefs, String key) {
+                // Update pie chart with changes in played time if they occur while this chart is
+                // being displayed
+                if (!key.equals(MySharedPrefManager.SHARED_PREF_PLAYED_TIME_KEY)){
+                    // Discard
+                    MyLog.d(TAG,"onSharedPreferenceChanged: Discarding key=" + key + " value=" + prefs.getLong(key,-1));
+                    return;
+                } else {
+                    // Get pie chart view and update pieces
+                    MyLog.d(TAG,"onSharedPreferenceChanged: Processing key=" + key + " value=" + prefs.getLong(key,-1));
+                    PieChart pieChart = (PieChart) getView().findViewById(R.id.pie_chart);
+                    updatePieChart(pieChart);
+                }
+            }
+        };
+        // Register to listen to updates in played time
+        mMySp.getPlayedSharedPref().registerOnSharedPreferenceChangeListener(mListener);
     }
 
     @Override
@@ -42,11 +78,11 @@ public class PieChartFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View pieChartFragmentView = inflater.inflate(R.layout.fragment_pie_chart, container, false);
-        setPieChart((PieChart) pieChartFragmentView.findViewById(R.id.pie_chart));
+        createPieChart((PieChart) pieChartFragmentView.findViewById(R.id.pie_chart));
         return pieChartFragmentView;
     }
 
-    private void setPieChart(PieChart pieChart) {
+    private void createPieChart(PieChart pieChart) {
         pieChart.setUsePercentValues(true);
         pieChart.getDescription().setEnabled(false);
         pieChart.getLegend().setEnabled(false);
@@ -61,15 +97,27 @@ public class PieChartFragment extends Fragment {
         pieChart.setEntryLabelColor(Color.DKGRAY);
         pieChart.setEntryLabelTextSize(16f);
 
-        // Set pie pieces
-        long playedTime = mSp.getPlayedTimeInMinutes();
-        long playTimeLimit = mSp.getPlayTimeLimitInMinutes();
-        long playedTimePie = Math.min((int) playedTime, (int) playTimeLimit);
-        long remainingTimePie = playTimeLimit - playedTimePie;
+        // Set pie pieces and update view
+        setPieChartPieces(pieChart);
+    }
+
+    // pieChart: the pie chart view to have its pieces update
+    private void updatePieChart(PieChart pieChart){
+        setPieChartPieces(pieChart);
+        pieChart.notifyDataSetChanged();
+        pieChart.invalidate();
+    }
+
+    // pieChart: the pie chart view to have its pieces set
+    private void setPieChartPieces(PieChart pieChart){
+
+        int played = (int) mMySp.getPlayedTimeInMinutes();
+        int limit = (int) mMySp.getPlayTimeLimitInMinutes();
+        int playedTimePie = Math.min(played,    limit);
+        int remainingTimePie = limit - playedTimePie;
         ArrayList<PieEntry> yValues = new ArrayList<>();
         yValues.add(new PieEntry(playedTimePie, "Played"));
         yValues.add(new PieEntry(remainingTimePie, "Remaining"));
-
         PieDataSet dataSet = new PieDataSet(yValues, null);
         dataSet.setSliceSpace(2f);
         dataSet.setSelectionShift(5f);
@@ -77,10 +125,10 @@ public class PieChartFragment extends Fragment {
         // Set pie color
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             // API level >= 23
-            if (playedTime <= playTimeLimit){
+            if (played <= limit) {
                 // Play time is within limit
                 dataSet.setColors(getResources().getColor(R.color.colorAccent, null),
-                    getResources().getColor(R.color.colorLightGrey, null));
+                        getResources().getColor(R.color.colorLightGrey, null));
             } else {
                 // Play time limit exceeded
                 dataSet.setColors(getResources().getColor(R.color.colorOrange, null),
@@ -94,12 +142,13 @@ public class PieChartFragment extends Fragment {
 
         PieData pieData = new PieData((dataSet));
         pieData.setValueTextSize(20f);
+
         // pieData.setValueTextColor(Color.DKGRAY);
-        /*ArrayList<Integer> textColors = new ArrayList<>();
-        textColors.add(Color.DKGRAY);
-        textColors.add(Color.LTGRAY);
-        pieData.setValueTextColors(textColors);*/
-        pieData.setValueTextColor(Color.DKGRAY);
+        // ArrayList<Integer> textColors = new ArrayList<>();
+        // textColors.add(Color.DKGRAY);
+        // textColors.add(Color.LTGRAY);
+        // pieData.setValueTextColors(textColors);
+        // pieData.setValueTextColor(Color.DKGRAY);
 
         pieChart.setData(pieData);
     }

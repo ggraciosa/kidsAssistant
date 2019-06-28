@@ -26,7 +26,7 @@ public class MySharedPrefManager {
 
     public static final String TAG = MySharedPrefManager.class.getSimpleName();
 
-    // SHARED PREFERENCE: DEFAULT (SETTINGS)
+    // SHARED PREFERENCE: SettingsSharedPref (default settings)
     // Default (settings) shared preferences constants
     // Settings preference switch to enable/disable playing time computation
     public static final String SHARED_PREF_SETTINGS_COMPUTE_PLAYING_TIME_KEY = "computePlayingTime";
@@ -41,30 +41,38 @@ public class MySharedPrefManager {
     public static final String SHARED_PREF_SETTINGS_PLAY_TIME_LIMIT_FRIDAY_VALUE = "60";
     public static final String SHARED_PREF_SETTINGS_PLAY_TIME_LIMIT_SATURDAY_VALUE = "90";
 
-    // SHARED PREFERENCE: AUXILIAR
-    // Auxiliar shared preference file name
-    public static final String SHARED_PREF_FILENAME = "auxiliarSharedPref";
+    // SHARED PREFERENCE: PlayedTimeSharedPref (played time and associated data)
+    // File name
+    public static final String SHARED_PREF_PLAYED_FILENAME = "auxiliarSharedPref";
     // Auxiliar data to calculate daily usage (elapsed playing time)
-    public static final String SHARED_PREF_LAST_ELAPSED_TIME_KEY = "elapsedTime";
+    public static final String SHARED_PREF_PLAYED_LAST_ELAPSED_TIME_KEY = "elapsedTime";
     // Current day
-    public static final String SHARED_PREF_PLAYING_DATE_KEY = "playingDate";
+    public static final String SHARED_PREF_PLAYED_PLAYING_DATE_KEY = "playingDate";
     // Total time kids have played in current day
     public static final String SHARED_PREF_PLAYED_TIME_KEY = "playedTime";
     // Playing time percentage (0 - 100%) to promote notification from default to high (heads up)
-    public static final String SHARED_PREF_PROGRESS_THRESHOLD_PERCENTAGE_KEY = "progressThreshold";
+    public static final String SHARED_PREF_PLAYED_PROGRESS_THRESHOLD_PERCENTAGE_KEY = "progressThreshold";
     // Date to control weekday default play time updates
-    public static final String SHARED_PREF_WEEKDAY_UPDATE_CONTROL_DATE = "weekdayControlDate";
+    public static final String SHARED_PREF_PLAYED_WEEKDAY_UPDATE_CONTROL_DATE = "weekdayControlDate";
 
     /**************
      *** FIELDS ***
      **************/
 
-    private SharedPreferences mAuxSharedPref;
+    private SharedPreferences mPlayedSharedPref;
     private SharedPreferences mSettingsSharedPref;
 
     /***************
      *** METHODS ***
      ***************/
+
+    public SharedPreferences getSettingsSharedPref(){
+        return mSettingsSharedPref;
+    }
+
+    public SharedPreferences getPlayedSharedPref(){
+        return mPlayedSharedPref;
+    }
 
     public MySharedPrefManager(Context context){
 
@@ -73,12 +81,12 @@ public class MySharedPrefManager {
         mSettingsSharedPref = PreferenceManager.getDefaultSharedPreferences(context);
 
         // Get non default shared preference
-        mAuxSharedPref = context.getSharedPreferences(SHARED_PREF_FILENAME, Context.MODE_PRIVATE);
+        mPlayedSharedPref = context.getSharedPreferences(SHARED_PREF_PLAYED_FILENAME, Context.MODE_PRIVATE);
         // Initialize playing date if needed
-        String lastPlayingDate = mAuxSharedPref.getString(SHARED_PREF_PLAYING_DATE_KEY, "EMPTY");
+        String lastPlayingDate = mPlayedSharedPref.getString(SHARED_PREF_PLAYED_PLAYING_DATE_KEY, "EMPTY");
         if (lastPlayingDate.equals("EMPTY")){
-            Editor editor = mAuxSharedPref.edit();
-            editor.putString(SHARED_PREF_PLAYING_DATE_KEY, Utils.getCurrentDate());
+            Editor editor = mPlayedSharedPref.edit();
+            editor.putString(SHARED_PREF_PLAYED_PLAYING_DATE_KEY, Utils.getCurrentDate());
             editor.commit();
         }
     }
@@ -86,8 +94,8 @@ public class MySharedPrefManager {
     public void updatePlayedTime() {
 
         long elapsedTime = SystemClock.elapsedRealtime();
-        long previousElapsedTime = mAuxSharedPref.getLong(SHARED_PREF_LAST_ELAPSED_TIME_KEY, 0);
-        long previousPlayingTime = mAuxSharedPref.getLong(SHARED_PREF_PLAYED_TIME_KEY, 0);
+        long previousElapsedTime = mPlayedSharedPref.getLong(SHARED_PREF_PLAYED_LAST_ELAPSED_TIME_KEY, 0);
+        long previousPlayingTime = mPlayedSharedPref.getLong(SHARED_PREF_PLAYED_TIME_KEY, 0);
 
         if (previousElapsedTime == 0) {
             // First time, no previous data.
@@ -103,26 +111,26 @@ public class MySharedPrefManager {
             playingTime = INTERVAL;
         }
 
-        Editor editor = mAuxSharedPref.edit();
-        editor.putLong(SHARED_PREF_LAST_ELAPSED_TIME_KEY, elapsedTime);
+        Editor editor = mPlayedSharedPref.edit();
+        editor.putLong(SHARED_PREF_PLAYED_LAST_ELAPSED_TIME_KEY, elapsedTime);
         editor.putLong(SHARED_PREF_PLAYED_TIME_KEY, previousPlayingTime + playingTime);
         editor.commit();
     }
 
     public void resetElapsedPlayedTime(){
-        Editor editor = mAuxSharedPref.edit();
-        editor.putLong(SHARED_PREF_LAST_ELAPSED_TIME_KEY, 0);
+        Editor editor = mPlayedSharedPref.edit();
+        editor.putLong(SHARED_PREF_PLAYED_LAST_ELAPSED_TIME_KEY, 0);
         editor.commit();
     }
 
     public void resetPlayedTime(){
-        Editor editor = mAuxSharedPref.edit();
+        Editor editor = mPlayedSharedPref.edit();
         editor.putLong(SHARED_PREF_PLAYED_TIME_KEY, 0);
         editor.commit();
     }
 
     public long getPlayedTimeInMinutes() {
-        long playingTime = mAuxSharedPref.getLong(SHARED_PREF_PLAYED_TIME_KEY, 0);
+        long playingTime = mPlayedSharedPref.getLong(SHARED_PREF_PLAYED_TIME_KEY, 0);
         return TimeUnit.MILLISECONDS.toMinutes(playingTime);
     }
 
@@ -141,7 +149,7 @@ public class MySharedPrefManager {
 
     // true if a new day
     public boolean hasDateChanged(){
-        String lastDate = mAuxSharedPref.getString(SHARED_PREF_PLAYING_DATE_KEY, "EMPTY");
+        String lastDate = mPlayedSharedPref.getString(SHARED_PREF_PLAYED_PLAYING_DATE_KEY, "EMPTY");
         String currentDate = Utils.getCurrentDate();
         return !currentDate.equals(lastDate);
     }
@@ -149,8 +157,8 @@ public class MySharedPrefManager {
     // Set today as playing date
     public void setPlayingDate(){
         String currentDate = Utils.getCurrentDate();
-        Editor editor = mAuxSharedPref.edit();
-        editor.putString(SHARED_PREF_PLAYING_DATE_KEY, currentDate);
+        Editor editor = mPlayedSharedPref.edit();
+        editor.putString(SHARED_PREF_PLAYED_PLAYING_DATE_KEY, currentDate);
         editor.commit();
         MyLog.d(TAG, "setPlayingDate: " + currentDate);
     }
@@ -159,15 +167,15 @@ public class MySharedPrefManager {
     // Do it only once a day because if user overrode default in settings, user choice should hold.
     public void setWeekdayPlayTimeLimitOnce(){
 
-        String previousDate = mAuxSharedPref.getString(SHARED_PREF_WEEKDAY_UPDATE_CONTROL_DATE, "EMPTY");
+        String previousDate = mPlayedSharedPref.getString(SHARED_PREF_PLAYED_WEEKDAY_UPDATE_CONTROL_DATE, "EMPTY");
         String currentDate = Utils.getCurrentDate();
         boolean firstCall = !currentDate.equals(previousDate);
         if (firstCall){
             // First time this method is called today
             // Update control date
-            Editor edAux = mAuxSharedPref.edit();
-            edAux.putString(SHARED_PREF_WEEKDAY_UPDATE_CONTROL_DATE, currentDate);
-            edAux.commit();
+            Editor edPlayed = mPlayedSharedPref.edit();
+            edPlayed.putString(SHARED_PREF_PLAYED_WEEKDAY_UPDATE_CONTROL_DATE, currentDate);
+            edPlayed.commit();
             // Update playtime limit given today's day of the week
             String weekdayPlayTimeLimit = getWeekdayPlayTimeLimit();
             Editor edDef = mSettingsSharedPref.edit();
@@ -210,13 +218,13 @@ public class MySharedPrefManager {
     }
 
     public void setProgressThresholdInMinutes(int progressThreshold){
-        Editor editor = mAuxSharedPref.edit();
-        editor.putLong(SHARED_PREF_PROGRESS_THRESHOLD_PERCENTAGE_KEY, progressThreshold);
+        Editor editor = mPlayedSharedPref.edit();
+        editor.putLong(SHARED_PREF_PLAYED_PROGRESS_THRESHOLD_PERCENTAGE_KEY, progressThreshold);
         editor.commit();
     }
 
     public int getProgressThresholdInMinutes(){
-        int progresThreshold = mAuxSharedPref.getInt(SHARED_PREF_PROGRESS_THRESHOLD_PERCENTAGE_KEY,
+        int progresThreshold = mPlayedSharedPref.getInt(SHARED_PREF_PLAYED_PROGRESS_THRESHOLD_PERCENTAGE_KEY,
                         DEFAULT_PROGRESS_THRESHOLD_PERCENTAGE);
         return progresThreshold;
     }
