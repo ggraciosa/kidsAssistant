@@ -90,10 +90,11 @@ public class HistoryFragment extends Fragment {
             int chartsCnt = (int) Math.ceil(totalRecords / (double) BARS_PER_CHART);
             MyLog.d(TAG,"doInBackground: chartsCnt=" + chartsCnt);
 
-            // Build each chart's data
-            ArrayList<BarData> list = new ArrayList<>();
+            // Build each chart's data and order to display chart with most recent data at the top.
+            ArrayList<BarData> list = new ArrayList<>(chartsCnt);
             for (int i = 0; i < chartsCnt; i++) {
-                list.add(buildChartData(i));
+                // Add at the 1st position to shift right other elements
+                list.add(0, buildChartData(i));
             }
 
             // Return chart list to system
@@ -167,21 +168,51 @@ public class HistoryFragment extends Fragment {
         ArrayList<PlayedTimeEntity> entities = getEntitiesSlice(offset);
         // Get entities slice size
         int count = entities.size();
+        MyLog.d(TAG,"buildChartData entities.size =" + count);
 
         ArrayList<BarEntry> entries = new ArrayList<>();
         ArrayList<String> dates = new ArrayList<>();
 
-        MyLog.d(TAG,"buildChartData entities.size =" + entities.size());
+        // Set color of each bar
+        int colorAccent = getResources().getColor(R.color.colorAccent);
+        int colorOrange = getResources().getColor(R.color.colorOrange);
+        int colorTransparent = getResources().getColor(R.color.colorTransparent);
+        int barsColor[] = new int[BARS_PER_CHART];
+        ArrayList<Integer> barsTextColor = new ArrayList<>();
+
+        // Get valid entries
         for (int i = 0; i < count; i++) {
-            // Get value of each bar
+            // Create bar and set text value
             BarEntry entry = new BarEntry(i, entities.get(i).getPlayed());
             entries.add(entry);
-            // Get dates
+            // Set bar color
+            if (entities.get(i).getPlayed() <= entities.get(i).getLimit()){
+                // Played time within limit
+                barsColor[i] = colorAccent;
+                barsTextColor.add(colorAccent);
+            } else {
+                // Played time exceeded limit
+                barsColor[i] = colorOrange;
+                barsTextColor.add(colorOrange);
+            }
+            // Get bar date
             dates.add(entities.get(i).getDate());
         }
 
+        // Add dummy entries (bars) to force each bar in an incomplete charts to have the same
+        // width of the bars in a complete charts, if any.
+        for (int j = count; j < BARS_PER_CHART; j++){
+            // Chart is incomplete, create dummy bars
+            BarEntry entry = new BarEntry(j, 0);
+            entries.add(entry);
+            // Set transparency to 100% to hide bar text value
+            barsColor[j] = colorTransparent;
+            barsTextColor.add(colorTransparent);
+            dates.add("EMPTY");
+        }
+
         // Set subtitle to start and end dates of this chart
-        String legend = dates.get(count-1) + " ... " + dates.get(0);
+        String legend = dates.get(0) + " ... " + dates.get(count-1);
         BarDataSet d = new BarDataSet(entries, legend);
 
         // Set values to be displayed at the top of each bar as integers (no decimal digits)
@@ -190,28 +221,10 @@ public class HistoryFragment extends Fragment {
         // Set text size of values at the top of each bar
         d.setValueTextSize(BAR_TEXT_SIZE);
 
-        // Set color of each bar
-        int colorAccent = getResources().getColor(R.color.colorAccent);
-        int colorOrange = getResources().getColor(R.color.colorOrange);
-        int colors[] = new int[count];
-        for (int i = 0; i < count; i++){
-            if (entities.get(i).getPlayed() <= entities.get(i).getLimit()){
-                // Played time within limit
-                colors[i] = colorAccent;
-            } else {
-                // Played time exceeded limit
-                colors[i] = colorOrange;
-            }
-        }
-        d.setColors(colors);
+        // Set colors
+        d.setColors(barsColor);
+        d.setValueTextColors(barsTextColor);
         d.setBarShadowColor(Color.rgb(203, 203, 203));
-
-        // Set color of text on top of each bar
-        ArrayList<Integer> colorList = new ArrayList<>();
-        for (int i = 0; i < count; i++){
-            colorList.add(colors[i]);
-        }
-        d.setValueTextColors(colorList);
 
         ArrayList<IBarDataSet> sets = new ArrayList<>();
         sets.add(d);
@@ -230,13 +243,9 @@ public class HistoryFragment extends Fragment {
 
         // Calculate the end of entities slice
         int end = offset + Math.min(mEntities.size() - offset, BARS_PER_CHART);
-        MyLog.d(TAG,"getEntitiesSlice: mEntities.size=" + mEntities.size());
-        MyLog.d(TAG,"getEntitiesSlice: offset=" + offset);
-        MyLog.d(TAG,"getEntitiesSlice: end=" + end);
 
         for (int i = offset; i < end; i++) {
             entities.add(mEntities.get(i));
-            MyLog.d(TAG,"getEntitiesSlice: i=" + i);
         }
         return entities;
     }

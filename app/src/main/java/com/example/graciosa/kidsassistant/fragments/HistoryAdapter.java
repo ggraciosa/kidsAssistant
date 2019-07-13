@@ -141,7 +141,6 @@ public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.ViewHold
         // holder.getLegend().setCustom(new LinkedList<LegendEntry>());
         // holder.getLegend().setEnabled(false);
 
-
         // Set data
         holder.setData(data);
         holder.setFitBars(true);

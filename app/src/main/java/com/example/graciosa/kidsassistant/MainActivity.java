@@ -52,6 +52,7 @@ import java.util.List;
  * 30. done - Make notification icon colored (https://stackoverflow.com/questions/45874742/android-color-notification-icon).
  * 31. Remove icons from barChart legend.
  * 32. Update history charts dynamically upon change via TimeStepReceiver.
+ * 33. Always have 12 bars per chart in history.
  */
 
 public class MainActivity extends AppCompatActivity {
