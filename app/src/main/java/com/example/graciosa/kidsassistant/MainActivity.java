@@ -44,7 +44,7 @@ import java.util.List;
  * 22. done - Set chart legend to start and end date of that chart.
  * 23. Add action to bar touch e.g. display data, playedTime and limit?
  * 24. Display an explanation message in history when there is no data to be displayed.
- * 25. Custom history chart yAxis to display integer numbers and have no axis below 0.
+ * 25. done - Set history chart yAxis minimum value to 0.
  * 26. Support light/dark/follow-system modes.
  * 27. done - In notification, replace bottom "Kids Assistant" string with progress e.g. 23/60.
  * 28. Update database and notification when daily limit is changed in settings.

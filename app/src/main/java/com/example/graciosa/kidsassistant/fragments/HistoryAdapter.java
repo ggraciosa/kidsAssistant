@@ -12,11 +12,19 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.graciosa.kidsassistant.MyLog;
 import com.example.graciosa.kidsassistant.R;
 import com.github.mikephil.charting.charts.BarChart;
+import com.github.mikephil.charting.components.AxisBase;
 import com.github.mikephil.charting.components.Legend;
 import com.github.mikephil.charting.components.LegendEntry;
 import com.github.mikephil.charting.components.XAxis;
 import com.github.mikephil.charting.components.YAxis;
 import com.github.mikephil.charting.data.BarData;
+import com.github.mikephil.charting.data.BarDataSet;
+import com.github.mikephil.charting.data.BarEntry;
+import com.github.mikephil.charting.data.Entry;
+import com.github.mikephil.charting.formatter.IAxisValueFormatter;
+import com.github.mikephil.charting.formatter.IValueFormatter;
+import com.github.mikephil.charting.formatter.IndexAxisValueFormatter;
+import com.github.mikephil.charting.utils.ViewPortHandler;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -122,6 +130,7 @@ public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.ViewHold
         leftAxis.setSpaceTop(15f);
         leftAxis.setTextColor(axisLineColor);
         leftAxis.setTextSize(AXIS_LABELS_TEXT_SIZE);
+        leftAxis.setAxisMinimum(0f);
 
         YAxis rightAxis = holder.getAxisRight();
         //rightAxis.setTypeface(tfLight);
@@ -129,6 +138,7 @@ public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.ViewHold
         rightAxis.setSpaceTop(15f);
         rightAxis.setTextColor(axisLineColor);
         rightAxis.setTextSize(AXIS_LABELS_TEXT_SIZE);
+        rightAxis.setAxisMinimum(0f);
 
         // Legend
         holder.getLegend().setTextColor(axisLineColor);
