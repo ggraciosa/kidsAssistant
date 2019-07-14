@@ -44,7 +44,7 @@ import java.util.List;
  * 22. done - Set chart legend to start and end date of that chart.
  * 23. Add action to bar touch e.g. display data, playedTime and limit?
  * 24. Display an explanation message in history when there is no data to be displayed.
- * 25. Display integer numbers in chart Y axis.
+ * 25. Custom history chart yAxis to display integer numbers and have no axis below 0.
  * 26. Support light/dark/follow-system modes.
  * 27. done - In notification, replace bottom "Kids Assistant" string with progress e.g. 23/60.
  * 28. Update database and notification when daily limit is changed in settings.
@@ -52,7 +52,8 @@ import java.util.List;
  * 30. done - Make notification icon colored (https://stackoverflow.com/questions/45874742/android-color-notification-icon).
  * 31. Remove icons from barChart legend.
  * 32. Update history charts dynamically upon change via TimeStepReceiver.
- * 33. Always have 12 bars per chart in history.
+ * 33. done - Always have 12 bars per chart in history.
+ * 34. Replace 0-n numbers with played day under each history bar chart xAxis.
  */
 
 public class MainActivity extends AppCompatActivity {

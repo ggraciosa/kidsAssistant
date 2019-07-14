@@ -69,8 +69,6 @@ public class PieChartFragment extends Fragment {
                 }
             }
         };
-        // Register to listen to updates in played time
-        mMySp.getPlayedSharedPref().registerOnSharedPreferenceChangeListener(mListener);
     }
 
     @Override
@@ -81,6 +79,21 @@ public class PieChartFragment extends Fragment {
         createPieChart((PieChart) pieChartFragmentView.findViewById(R.id.pie_chart));
         return pieChartFragmentView;
     }
+
+    @Override
+    public void onResume(){
+        super.onResume();
+        // Register to listen to updates in played time
+        mMySp.getPlayedSharedPref().registerOnSharedPreferenceChangeListener(mListener);
+    }
+
+    @Override
+    public void onPause(){
+        super.onPause();
+        // Unregister to listen to updates in played time
+        mMySp.getPlayedSharedPref().unregisterOnSharedPreferenceChangeListener(mListener);
+    }
+
 
     private void createPieChart(PieChart pieChart) {
         pieChart.setUsePercentValues(true);
