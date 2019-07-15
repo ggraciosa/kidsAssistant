@@ -23,7 +23,7 @@ import java.util.List;
  * 3. done - Theme
  * 4. Clean: logs, commented code, not used code, not used resources, etc.
  * 5. done - Pie chart (https://jitpack.io/com/github/PhilJay/MPAndroidChart/v3.0.3/javadoc/)
- * 6. internationalize and localize
+ * 6. Internationalize and localize
  * 7. done - git hub
  * 8. done - store daily played time in database
  * 9. done - Fix orientation change bug
@@ -39,7 +39,7 @@ import java.util.List;
  *     when install App in my Z3 Play P multi user; cleaning app data from Global Settings solves the
  *     issue; issue does not happen in Z2 Play N single user neither G2 M single user.
  * 19. done - Set new data and reset time played upon midnight, even if device is no active.
- * 20. Replace Fragment class deprecated in API level 28
+ * 20. done - Replace Fragment class deprecated in API level 28
  * 21. done - Make bar value color follow bar color.
  * 22. done - Set chart legend to start and end date of that chart.
  * 23. Add action to bar touch e.g. display data, playedTime and limit?
@@ -53,7 +53,7 @@ import java.util.List;
  * 31. Remove icons from barChart legend.
  * 32. Update history charts dynamically upon change via TimeStepReceiver.
  * 33. done - Always have 12 bars per chart in history.
- * 34. Replace 0-n numbers with played day under each history bar chart xAxis.
+ * 34. done - Replace 0-n numbers with played day under each history bar chart xAxis.
  */
 
 public class MainActivity extends AppCompatActivity {

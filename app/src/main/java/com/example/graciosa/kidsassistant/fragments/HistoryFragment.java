@@ -37,14 +37,12 @@ public class HistoryFragment extends Fragment {
      *****************/
 
     final String TAG = TimeStepReceiver.class.getSimpleName();
-    private static final float BAR_TEXT_SIZE = 11f;
-    private static final int BARS_PER_CHART = 12;
 
     /**************
      *** FIELDS ***
      **************/
 
-    protected ArrayList<BarData> mList;
+    protected ArrayList<HistoryChartData> mList;
     // RecyclerView list. Requests view as user scrolls in list, in an efficient way.
     protected RecyclerView mRecyclerView;
     protected ArrayList<PlayedTimeEntity> mEntities;
@@ -68,11 +66,11 @@ public class HistoryFragment extends Fragment {
     /*
      * Get data from database and build charts data
      */
-    private class BarChartsDataBuilderAsyncTask extends AsyncTask<Void, Void, ArrayList<BarData>>{
+    private class BarChartsDataBuilderAsyncTask extends AsyncTask<Void, Void, ArrayList<HistoryChartData>>{
 
         // Executed in background thread
         @Override
-        protected ArrayList<BarData> doInBackground(Void... voids){
+        protected ArrayList<HistoryChartData> doInBackground(Void... voids){
 
             MyLog.d(TAG,"doInBackground begin");
 
@@ -87,11 +85,11 @@ public class HistoryFragment extends Fragment {
             mEntities = (ArrayList<PlayedTimeEntity>) dao.getAll();
 
             // Calculate the number of charts
-            int chartsCnt = (int) Math.ceil(totalRecords / (double) BARS_PER_CHART);
+            int chartsCnt = (int) Math.ceil(totalRecords / (double) HistoryChartData.BARS_PER_CHART);
             MyLog.d(TAG,"doInBackground: chartsCnt=" + chartsCnt);
 
             // Build each chart's data and order to display chart with most recent data at the top.
-            ArrayList<BarData> list = new ArrayList<>(chartsCnt);
+            ArrayList<HistoryChartData> list = new ArrayList<>(chartsCnt);
             for (int i = 0; i < chartsCnt; i++) {
                 // Add at the 1st position to shift right other elements
                 list.add(0, buildChartData(i));
@@ -162,9 +160,9 @@ public class HistoryFragment extends Fragment {
     /*
      * chartPosition: chart item in chart list i.e. 0, 1, 2, 3, etc
      */
-    private BarData buildChartData(int chartPosition){
+    private HistoryChartData buildChartData(int chartPosition){
 
-        int offset = chartPosition * BARS_PER_CHART;
+        int offset = chartPosition * HistoryChartData.BARS_PER_CHART;
         ArrayList<PlayedTimeEntity> entities = getEntitiesSlice(offset);
         // Get entities slice size
         int count = entities.size();
@@ -177,7 +175,7 @@ public class HistoryFragment extends Fragment {
         int colorAccent = getResources().getColor(R.color.colorAccent);
         int colorOrange = getResources().getColor(R.color.colorOrange);
         int colorTransparent = getResources().getColor(R.color.colorTransparent);
-        int barsColor[] = new int[BARS_PER_CHART];
+        int barsColor[] = new int[HistoryChartData.BARS_PER_CHART];
         ArrayList<Integer> barsTextColor = new ArrayList<>();
 
         // Get valid entries
@@ -201,14 +199,14 @@ public class HistoryFragment extends Fragment {
 
         // Add dummy entries (bars) to force each bar in an incomplete charts to have the same
         // width of the bars in a complete charts, if any.
-        for (int j = count; j < BARS_PER_CHART; j++){
+        for (int j = count; j < HistoryChartData.BARS_PER_CHART; j++){
             // Chart is incomplete, create dummy bars
             BarEntry entry = new BarEntry(j, 0);
             entries.add(entry);
             // Set transparency to 100% to hide bar text value
             barsColor[j] = colorTransparent;
             barsTextColor.add(colorTransparent);
-            dates.add("EMPTY");
+            dates.add(HistoryChartData.EMPTY);
         }
 
         // Set subtitle to start and end dates of this chart
@@ -219,7 +217,7 @@ public class HistoryFragment extends Fragment {
         d.setValueFormatter(new IntegerFormatter());
 
         // Set text size of values at the top of each bar
-        d.setValueTextSize(BAR_TEXT_SIZE);
+        d.setValueTextSize(HistoryChartData.BAR_TEXT_SIZE);
 
         // Set colors
         d.setColors(barsColor);
@@ -231,7 +229,10 @@ public class HistoryFragment extends Fragment {
 
         BarData bd = new BarData(sets);
         bd.setBarWidth(0.9f);
-        return bd;
+
+        HistoryChartData hd = new HistoryChartData(bd, dates);
+
+        return hd;
     }
 
     /*
@@ -242,7 +243,7 @@ public class HistoryFragment extends Fragment {
         ArrayList<PlayedTimeEntity> entities = new ArrayList<>();
 
         // Calculate the end of entities slice
-        int end = offset + Math.min(mEntities.size() - offset, BARS_PER_CHART);
+        int end = offset + Math.min(mEntities.size() - offset, HistoryChartData.BARS_PER_CHART);
 
         for (int i = offset; i < end; i++) {
             entities.add(mEntities.get(i));

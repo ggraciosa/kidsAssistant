@@ -12,26 +12,11 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.graciosa.kidsassistant.MyLog;
 import com.example.graciosa.kidsassistant.R;
 import com.github.mikephil.charting.charts.BarChart;
-import com.github.mikephil.charting.components.AxisBase;
-import com.github.mikephil.charting.components.Legend;
-import com.github.mikephil.charting.components.LegendEntry;
 import com.github.mikephil.charting.components.XAxis;
 import com.github.mikephil.charting.components.YAxis;
-import com.github.mikephil.charting.data.BarData;
-import com.github.mikephil.charting.data.BarDataSet;
-import com.github.mikephil.charting.data.BarEntry;
-import com.github.mikephil.charting.data.Entry;
-import com.github.mikephil.charting.formatter.IAxisValueFormatter;
-import com.github.mikephil.charting.formatter.IValueFormatter;
 import com.github.mikephil.charting.formatter.IndexAxisValueFormatter;
-import com.github.mikephil.charting.utils.ViewPortHandler;
 
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.LinkedList;
-import java.util.List;
-
-import static java.lang.Float.NaN;
 
 public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.ViewHolder> {
 
@@ -48,7 +33,8 @@ public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.ViewHold
      **************/
 
     private Context mContext;
-    private ArrayList<BarData> mList;
+    // List of charts, each element is a chart containing its bars and associated dates
+    private ArrayList<HistoryChartData> mList;
 
     /*********************
      *** INNER CLASSES ***
@@ -75,7 +61,7 @@ public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.ViewHold
         }
     }
 
-    public HistoryAdapter(ArrayList<BarData> list, Context context) {
+    public HistoryAdapter(ArrayList<HistoryChartData> list, Context context) {
 
         mList = list;
         mContext = context;
@@ -104,7 +90,7 @@ public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.ViewHold
         MyLog.d(TAG, "Bar chart " + position + " set.");
 
         // Get chart content to be displayed
-        BarData data = mList.get(position);
+        HistoryChartData data = mList.get(position);
 
         // Get content container
         BarChart holder = viewHolder.getBarChartView();
@@ -123,6 +109,20 @@ public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.ViewHold
         xAxis.setDrawGridLines(false);
         xAxis.setTextColor(axisLineColor);
         xAxis.setTextSize(AXIS_LABELS_TEXT_SIZE);
+        // Set the day of the month as the x axis label for each bar from "YYYY-MM-DD"
+        xAxis.setLabelCount(HistoryChartData.BARS_PER_CHART);
+        ArrayList<String> dates = mList.get(position).getBarsDate();
+        ArrayList<String> xLabels = new ArrayList<>();
+        for (int i=0; i<12; i++){
+            if (dates.get(i).equals(HistoryChartData.EMPTY)){
+                // Dummy date
+                xLabels.add("");
+            } else {
+                // Valid date, extract the day
+                xLabels.add(dates.get(i).substring(8));
+            }
+        }
+        xAxis.setValueFormatter(new IndexAxisValueFormatter(xLabels));
 
         YAxis leftAxis = holder.getAxisLeft();
         //leftAxis.setTypeface(tfLight);
@@ -152,7 +152,7 @@ public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.ViewHold
         // holder.getLegend().setEnabled(false);
 
         // Set data
-        holder.setData(data);
+        holder.setData(data.getBarsData());
         holder.setFitBars(true);
 
         // Refresh the chart
