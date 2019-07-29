@@ -1,5 +1,7 @@
 package com.example.graciosa.kidsassistant.db;
 
+import androidx.lifecycle.LiveData;
+import androidx.lifecycle.MutableLiveData;
 import androidx.room.Dao;
 import androidx.room.Delete;
 import androidx.room.Insert;
@@ -17,7 +19,7 @@ public interface PlayedTimeDao {
 
     @Query("SELECT COUNT(*) FROM PLAYEDTIMEENTITY")
     // Get the total number of records
-    int countAll();
+    LiveData<Integer> countAll();
 
     @Query("SELECT * FROM PLAYEDTIMEENTITY WHERE played > :threshold")
     // Get the number of records for which the played time is greater than 'threshold'.
@@ -26,7 +28,7 @@ public interface PlayedTimeDao {
 
     @Query("SELECT * FROM PLAYEDTIMEENTITY ORDER BY `date` ASC")
     // Get all records, oldest first
-    List<PlayedTimeEntity> getAll();
+    LiveData<List<PlayedTimeEntity>> getAll();
 
     @Query("SELECT * FROM PLAYEDTIMEENTITY WHERE played > `limit`")
     // Get the records where played time exceeded the limited for the day

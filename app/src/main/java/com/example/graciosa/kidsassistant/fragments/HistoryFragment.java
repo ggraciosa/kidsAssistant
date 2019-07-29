@@ -7,16 +7,17 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.Observer;
+import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.graciosa.kidsassistant.MyLog;
 import com.example.graciosa.kidsassistant.R;
-import com.example.graciosa.kidsassistant.db.PlayedTimeDao;
-import com.example.graciosa.kidsassistant.db.PlayedTimeDatabase;
-import com.example.graciosa.kidsassistant.db.PlayedTimeDatabaseSingleton;
 import com.example.graciosa.kidsassistant.db.PlayedTimeEntity;
+import com.example.graciosa.kidsassistant.db.PlayedTimeViewModel;
 import com.example.graciosa.kidsassistant.receivers.TimeStepReceiver;
 import com.github.mikephil.charting.data.BarData;
 import com.github.mikephil.charting.data.BarDataSet;
@@ -27,6 +28,7 @@ import com.github.mikephil.charting.interfaces.datasets.IBarDataSet;
 import com.github.mikephil.charting.utils.ViewPortHandler;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.ExecutionException;
 
 
@@ -36,16 +38,21 @@ public class HistoryFragment extends Fragment {
      *** CONSTANTS ***
      *****************/
 
-    final String TAG = TimeStepReceiver.class.getSimpleName();
+    final String TAG = HistoryFragment.class.getSimpleName();
 
     /**************
      *** FIELDS ***
      **************/
 
-    protected ArrayList<HistoryChartData> mList;
+    // ViewModels holds live data from db.
+    private PlayedTimeViewModel mViewModel;
     // RecyclerView list. Requests view as user scrolls in list, in an efficient way.
     protected RecyclerView mRecyclerView;
+    protected HistoryAdapter mRecyclerViewAdapter;
+    // Data retrieved from db.
     protected ArrayList<PlayedTimeEntity> mEntities;
+    // Data of each chart to be displayed in recycler view
+    protected ArrayList<HistoryChartData> mList;
 
     /*********************
      *** INNER CLASSES ***
@@ -66,7 +73,7 @@ public class HistoryFragment extends Fragment {
     /*
      * Get data from database and build charts data
      */
-    private class BarChartsDataBuilderAsyncTask extends AsyncTask<Void, Void, ArrayList<HistoryChartData>>{
+/*    private class BarChartsDataBuilderAsyncTask extends AsyncTask<Void, Void, ArrayList<HistoryChartData>>{
 
         // Executed in background thread
         @Override
@@ -101,7 +108,7 @@ public class HistoryFragment extends Fragment {
             return list;
         }
     }
-
+*/
     /***************
      *** METHODS ***
      ***************/
@@ -113,8 +120,13 @@ public class HistoryFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        //initList(LIST_SIZE);
-        // Execute async task to load data from database, wait until it is done
+
+        // Get the ViewModel that host the db live data which survives fragment lifecycle.
+        // This is called here, not onCreateView a would seem easier to read, in order to offload
+        // onCreateView since PlayedTimeViewModel will load all the data from room db.
+        mViewModel = ViewModelProviders.of(this).get(PlayedTimeViewModel.class);
+
+/*        // Execute async task to load data from database, wait until it is done
         // TODO: we may not block here and check async task status in onCreateView but how to wait there if not done?
         MyLog.d(TAG,"onCreate begin");
         try {
@@ -125,6 +137,39 @@ public class HistoryFragment extends Fragment {
             e.printStackTrace();
         }
         MyLog.d(TAG,"onCreate end");
+*/
+
+/*        mViewModel = ViewModelProviders.of(this).get(PlayedTimeViewModel.class);
+
+        // Below call of getAllPlayedTimeRecords() returns the data in "onChanged".
+        mViewModel.getAllPlayedTimeRecords().observe(this, new Observer<List<PlayedTimeEntity>>() {
+            @Override
+            public void onChanged(@Nullable List<PlayedTimeEntity> playedTimeEntities) {
+                // This method will called when getAllPlayedTimeRecords() is called for the first
+                // time and then every time room db is changed in a way that modifies
+                // getAllPlayedTimeRecords() return value.
+
+                // playedTimeEntities contains all records from db
+                int totalRecords = playedTimeEntities.size();
+                MyLog.d(TAG,"onChanged: totalRecords=" + totalRecords);
+
+                // Calculate the number of charts
+                int chartsCnt = (int) Math.ceil(totalRecords / (double) HistoryChartData.BARS_PER_CHART);
+                MyLog.d(TAG,"onChanged: chartsCnt=" + chartsCnt);
+
+                // Build each chart's data and order to display chart with most recent data at the top.
+                ArrayList<HistoryChartData> list = new ArrayList<>(chartsCnt);
+                for (int i = 0; i < chartsCnt; i++) {
+                    // Add at the 1st position to shift right other elements
+                    list.add(0, buildChartData(i));
+                }
+
+                // Return chart list to system
+                return list;
+
+            }
+        });
+*/
     }
 
     @Override
@@ -150,7 +195,36 @@ public class HistoryFragment extends Fragment {
 
         // Set the adapter for RecyclerView list.
         // The adapter provides views to RecyclerView's layout manager as user scrolls the list.
-        mRecyclerView.setAdapter(new HistoryAdapter(mList, getContext()));
+        mRecyclerViewAdapter = new HistoryAdapter(getContext());
+        mRecyclerView.setAdapter(mRecyclerViewAdapter);
+
+
+        // Below call of getAllPlayedTimeRecords() returns the data in "onChanged".
+        mViewModel.getAllPlayedTimeRecords().observe(this, new Observer<List<PlayedTimeEntity>>() {
+            @Override
+            public void onChanged(@Nullable List<PlayedTimeEntity> playedTimeEntities) {
+                // This observer'' method will be called when getAllPlayedTimeRecords() is called
+                // for the first time and then every time room db is changed in a way that modifies
+                // getAllPlayedTimeRecords() returned value.
+
+                // playedTimeEntities contains all records from db.
+                int totalRecords = playedTimeEntities.size();
+                MyLog.d(TAG, "onChanged: totalRecords=" + totalRecords);
+
+                // Calculate the number of charts
+                int chartsCnt = (int) Math.ceil(totalRecords / (double) HistoryChartData.BARS_PER_CHART);
+                MyLog.d(TAG, "onChanged: chartsCnt=" + chartsCnt);
+
+                // Build each chart's data and order to display chart with most recent data at the top.
+                ArrayList<HistoryChartData> list = new ArrayList<>(chartsCnt);
+                for (int i = 0; i < chartsCnt; i++) {
+                    // Add at the 1st position to shift right other elements
+                    list.add(0, buildChartData(i));
+                }
+
+                mRecyclerViewAdapter.setOrUpdateData(list);
+            }
+        });
 
         MyLog.d(TAG,"onCreateView end");
 

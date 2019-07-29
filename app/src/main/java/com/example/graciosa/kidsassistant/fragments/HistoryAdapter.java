@@ -61,15 +61,14 @@ public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.ViewHold
         }
     }
 
-    public HistoryAdapter(ArrayList<HistoryChartData> list, Context context) {
-
-        mList = list;
-        mContext = context;
-    }
-
     /***************
      *** METHODS ***
      ***************/
+
+    public HistoryAdapter(Context context) {
+
+        mContext = context;
+    }
 
     // Create new views (invoked by the layout manager)
     @Override
@@ -158,6 +157,16 @@ public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.ViewHold
         // Refresh the chart
         // holder.chart.invalidate();
         holder.animateY(700);
+    }
+
+    // Receive data and if data is being replaced notify view to get refreshed.
+    public void setOrUpdateData(ArrayList<HistoryChartData> list){
+        boolean requestViewUpdate = mList == null;
+        mList = list;
+        if (requestViewUpdate){
+            // Data was replaced, update UI.
+            notifyDataSetChanged();
+        }
     }
 
     // Return the dataset size (invoked by the layout manager)
