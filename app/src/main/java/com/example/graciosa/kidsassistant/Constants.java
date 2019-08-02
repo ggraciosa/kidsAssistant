@@ -1,7 +1,5 @@
 package com.example.graciosa.kidsassistant;
 
-//import java.util.concurrent.TimeUnit;
-
 public class Constants {
 
     public static final String KIDS_ASSISTANT = "KidsAssistant";

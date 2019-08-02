@@ -1,7 +1,6 @@
 package com.example.graciosa.kidsassistant.fragments;
 
 import android.graphics.Color;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -18,7 +17,6 @@ import com.example.graciosa.kidsassistant.MyLog;
 import com.example.graciosa.kidsassistant.R;
 import com.example.graciosa.kidsassistant.db.PlayedTimeEntity;
 import com.example.graciosa.kidsassistant.db.PlayedTimeViewModel;
-import com.example.graciosa.kidsassistant.receivers.TimeStepReceiver;
 import com.github.mikephil.charting.data.BarData;
 import com.github.mikephil.charting.data.BarDataSet;
 import com.github.mikephil.charting.data.BarEntry;
@@ -29,7 +27,6 @@ import com.github.mikephil.charting.utils.ViewPortHandler;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.ExecutionException;
 
 
 public class HistoryFragment extends Fragment {
@@ -51,8 +48,6 @@ public class HistoryFragment extends Fragment {
     protected HistoryAdapter mRecyclerViewAdapter;
     // Data retrieved from db.
     protected ArrayList<PlayedTimeEntity> mEntities;
-    // Data of each chart to be displayed in recycler view
-    protected ArrayList<HistoryChartData> mList;
 
     /*********************
      *** INNER CLASSES ***
@@ -70,45 +65,6 @@ public class HistoryFragment extends Fragment {
         }
     }
 
-    /*
-     * Get data from database and build charts data
-     */
-/*    private class BarChartsDataBuilderAsyncTask extends AsyncTask<Void, Void, ArrayList<HistoryChartData>>{
-
-        // Executed in background thread
-        @Override
-        protected ArrayList<HistoryChartData> doInBackground(Void... voids){
-
-            MyLog.d(TAG,"doInBackground begin");
-
-            // Get total number of records in database
-            PlayedTimeDatabase db =
-                    PlayedTimeDatabaseSingleton.getInstance(getContext()).getDatabase();
-            PlayedTimeDao dao = db.playedTimeDao();
-            int totalRecords = dao.countAll();
-            MyLog.d(TAG,"doInBackground: totalRecords=" + totalRecords);
-
-            // Get all records from database
-            mEntities = (ArrayList<PlayedTimeEntity>) dao.getAll();
-
-            // Calculate the number of charts
-            int chartsCnt = (int) Math.ceil(totalRecords / (double) HistoryChartData.BARS_PER_CHART);
-            MyLog.d(TAG,"doInBackground: chartsCnt=" + chartsCnt);
-
-            // Build each chart's data and order to display chart with most recent data at the top.
-            ArrayList<HistoryChartData> list = new ArrayList<>(chartsCnt);
-            for (int i = 0; i < chartsCnt; i++) {
-                // Add at the 1st position to shift right other elements
-                list.add(0, buildChartData(i));
-            }
-
-            // Return chart list to system
-            MyLog.d(TAG,"doInBackground end");
-
-            return list;
-        }
-    }
-*/
     /***************
      *** METHODS ***
      ***************/
@@ -121,41 +77,31 @@ public class HistoryFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        // The adapter provides views to RecyclerView's layout manager as user scrolls the list.
+        mRecyclerViewAdapter = new HistoryAdapter(getContext());
+
         // Get the ViewModel that host the db live data which survives fragment lifecycle.
-        // This is called here, not onCreateView a would seem easier to read, in order to offload
-        // onCreateView since PlayedTimeViewModel will load all the data from room db.
         mViewModel = ViewModelProviders.of(this).get(PlayedTimeViewModel.class);
 
-/*        // Execute async task to load data from database, wait until it is done
-        // TODO: we may not block here and check async task status in onCreateView but how to wait there if not done?
-        MyLog.d(TAG,"onCreate begin");
-        try {
-            mList = new BarChartsDataBuilderAsyncTask().execute().get();
-        } catch (ExecutionException e) {
-            e.printStackTrace();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-        MyLog.d(TAG,"onCreate end");
-*/
-
-/*        mViewModel = ViewModelProviders.of(this).get(PlayedTimeViewModel.class);
-
-        // Below call of getAllPlayedTimeRecords() returns the data in "onChanged".
+        // Below call of getAllPlayedTimeRecords() returns the data in "onChanged", asynchronously,
+        // when LiveData is ready. This call shall be done here in onCreate. onChanged callback is
+        // not invoked if below code is defined at onCreateView.
         mViewModel.getAllPlayedTimeRecords().observe(this, new Observer<List<PlayedTimeEntity>>() {
             @Override
+            // Callback to be asynchronously called by system upon 1st call to
+            // getAllPlayedTimeRecords() once the LiveData return value is loaded. Then will
+            // be called agiain every time the data to be returned by getAllPlayedTimeRecords()
+            // is changed due to changes in room db.
             public void onChanged(@Nullable List<PlayedTimeEntity> playedTimeEntities) {
-                // This method will called when getAllPlayedTimeRecords() is called for the first
-                // time and then every time room db is changed in a way that modifies
-                // getAllPlayedTimeRecords() return value.
 
                 // playedTimeEntities contains all records from db
-                int totalRecords = playedTimeEntities.size();
-                MyLog.d(TAG,"onChanged: totalRecords=" + totalRecords);
+                mEntities = (ArrayList<PlayedTimeEntity>) playedTimeEntities;
+                int totalRecords = mEntities.size();
+                MyLog.d(TAG, "onChanged: totalRecords=" + totalRecords);
 
                 // Calculate the number of charts
                 int chartsCnt = (int) Math.ceil(totalRecords / (double) HistoryChartData.BARS_PER_CHART);
-                MyLog.d(TAG,"onChanged: chartsCnt=" + chartsCnt);
+                MyLog.d(TAG, "onChanged: chartsCnt=" + chartsCnt);
 
                 // Build each chart's data and order to display chart with most recent data at the top.
                 ArrayList<HistoryChartData> list = new ArrayList<>(chartsCnt);
@@ -164,12 +110,9 @@ public class HistoryFragment extends Fragment {
                     list.add(0, buildChartData(i));
                 }
 
-                // Return chart list to system
-                return list;
-
+                mRecyclerViewAdapter.setOrUpdateData(list);
             }
         });
-*/
     }
 
     @Override
@@ -194,37 +137,7 @@ public class HistoryFragment extends Fragment {
         mRecyclerView.scrollToPosition(scrollPosition);
 
         // Set the adapter for RecyclerView list.
-        // The adapter provides views to RecyclerView's layout manager as user scrolls the list.
-        mRecyclerViewAdapter = new HistoryAdapter(getContext());
         mRecyclerView.setAdapter(mRecyclerViewAdapter);
-
-
-        // Below call of getAllPlayedTimeRecords() returns the data in "onChanged".
-        mViewModel.getAllPlayedTimeRecords().observe(this, new Observer<List<PlayedTimeEntity>>() {
-            @Override
-            public void onChanged(@Nullable List<PlayedTimeEntity> playedTimeEntities) {
-                // This observer'' method will be called when getAllPlayedTimeRecords() is called
-                // for the first time and then every time room db is changed in a way that modifies
-                // getAllPlayedTimeRecords() returned value.
-
-                // playedTimeEntities contains all records from db.
-                int totalRecords = playedTimeEntities.size();
-                MyLog.d(TAG, "onChanged: totalRecords=" + totalRecords);
-
-                // Calculate the number of charts
-                int chartsCnt = (int) Math.ceil(totalRecords / (double) HistoryChartData.BARS_PER_CHART);
-                MyLog.d(TAG, "onChanged: chartsCnt=" + chartsCnt);
-
-                // Build each chart's data and order to display chart with most recent data at the top.
-                ArrayList<HistoryChartData> list = new ArrayList<>(chartsCnt);
-                for (int i = 0; i < chartsCnt; i++) {
-                    // Add at the 1st position to shift right other elements
-                    list.add(0, buildChartData(i));
-                }
-
-                mRecyclerViewAdapter.setOrUpdateData(list);
-            }
-        });
 
         MyLog.d(TAG,"onCreateView end");
 
@@ -255,6 +168,7 @@ public class HistoryFragment extends Fragment {
         // Get valid entries
         for (int i = 0; i < count; i++) {
             // Create bar and set text value
+            MyLog.d(TAG, "buildChartData: played time ="+ entities.get(i).getPlayed());
             BarEntry entry = new BarEntry(i, entities.get(i).getPlayed());
             entries.add(entry);
             // Set bar color

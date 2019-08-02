@@ -68,6 +68,12 @@ public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.ViewHold
     public HistoryAdapter(Context context) {
 
         mContext = context;
+
+        // Need a non null object to provide to the system in getItemCount, while wait for an
+        // update with valid data from HistoryFragment, which on its turn will receive
+        // asynchronously from system via LiveData.
+        mList = new ArrayList<>();
+
     }
 
     // Create new views (invoked by the layout manager)
@@ -86,7 +92,7 @@ public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.ViewHold
     @Override
     public void onBindViewHolder(ViewHolder viewHolder, final int position) {
 
-        MyLog.d(TAG, "Bar chart " + position + " set.");
+        MyLog.d(TAG, "onBindViewHolder: Bar chart " + position + " set.");
 
         // Get chart content to be displayed
         HistoryChartData data = mList.get(position);
@@ -159,14 +165,10 @@ public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.ViewHold
         holder.animateY(700);
     }
 
-    // Receive data and if data is being replaced notify view to get refreshed.
+    // Receive new data and notify view to refresh its data with the new data.
     public void setOrUpdateData(ArrayList<HistoryChartData> list){
-        boolean requestViewUpdate = mList == null;
         mList = list;
-        if (requestViewUpdate){
-            // Data was replaced, update UI.
-            notifyDataSetChanged();
-        }
+        notifyDataSetChanged();
     }
 
     // Return the dataset size (invoked by the layout manager)
