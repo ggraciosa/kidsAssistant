@@ -43,7 +43,7 @@ import java.util.List;
  * 21. done - Make bar value color follow bar color.
  * 22. done - Set chart legend to start and end date of that chart.
  * 23. Add action to bar touch e.g. display data, playedTime and limit?
- * 24. Display an explanation message in history when there is no data to be displayed.
+ * 24. done - Display an explanation message in history when there is no data to be displayed.
  * 25. done - Set history chart yAxis minimum value to 0.
  * 26. Support light/dark/follow-system modes.
  * 27. done - In notification, replace bottom "Kids Assistant" string with progress e.g. 23/60.

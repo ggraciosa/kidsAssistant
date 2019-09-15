@@ -28,6 +28,9 @@ public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.ViewHold
 
     private static final float AXIS_LABELS_TEXT_SIZE = 11f;
 
+    private static final int ITEM_VIEW_TYPE_TEXT = 0;
+    private static final int ITEM_VIEW_TYPE_DATA = 1;
+
     /**************
      *** FIELDS ***
      **************/
@@ -73,16 +76,27 @@ public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.ViewHold
         // update with valid data from HistoryFragment, which on its turn will receive
         // asynchronously from system via LiveData.
         mList = new ArrayList<>();
-
     }
 
     // Create new views (invoked by the layout manager)
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup viewGroup, int viewType) {
 
-        // Create a new view.
-        View v = LayoutInflater.from(viewGroup.getContext())
-                .inflate(R.layout.fragment_history_list_item, viewGroup, false);
+        MyLog.d(TAG, "onCreateViewHolder");
+
+        int res = 0;
+        switch (viewType){
+            case ITEM_VIEW_TYPE_TEXT:
+                res = R.layout.fragment_history_list_empty;
+                break;
+            case ITEM_VIEW_TYPE_DATA:
+                res = R.layout.fragment_history_list_item;
+                break;
+            default:
+                MyLog.e(TAG, "onCreateViewHolder: this point should never be reached.");
+        }
+
+        View v = LayoutInflater.from(viewGroup.getContext()).inflate(res, viewGroup, false);
 
         return new ViewHolder(v);
     }
@@ -92,7 +106,14 @@ public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.ViewHold
     @Override
     public void onBindViewHolder(ViewHolder viewHolder, final int position) {
 
-        MyLog.d(TAG, "onBindViewHolder: Bar chart " + position + " set.");
+        int viewType = viewHolder.getItemViewType();
+
+        MyLog.d(TAG, "onBindViewHolder: view type= " + viewType + "; position=" + position);
+
+        if (viewType == ITEM_VIEW_TYPE_TEXT){
+            // Nothing to do since view content is in R.layout.fragment_history_list_empty.
+            return;
+        }
 
         // Get chart content to be displayed
         HistoryChartData data = mList.get(position);
@@ -171,9 +192,33 @@ public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.ViewHold
         notifyDataSetChanged();
     }
 
-    // Return the dataset size (invoked by the layout manager)
+    // Invoked by the system just before onCreateViewHolder to get the type of view.
+    @Override
+    public int getItemViewType(int position){
+
+         int viewType;
+
+        if (mList == null || mList.size() == 0){
+            // No data, e.g. user has not yed switch on time computation in app settings.
+            // Inform user that data will be displayed when available.
+            viewType = ITEM_VIEW_TYPE_TEXT;
+        } else {
+            // Data already available, display the data charts.
+            viewType = ITEM_VIEW_TYPE_DATA;
+        }
+        MyLog.d(TAG, "getItemViewType: viewType=" + viewType);
+        return viewType;
+    }
+
+    // Invoked by the system (layout manager) to get number of items to be displayed.
     @Override
     public int getItemCount() {
-        return mList.size();
+        if (mList.size() == 0){
+            // No data, e.g. user has not yed switch on time computation in app settings.
+            // Display the text item informing user that data will be displayed when available.
+            return 1;
+        } else {
+            return mList.size();
+        }
     }
 }
