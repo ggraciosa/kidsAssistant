@@ -8,16 +8,16 @@
 
     <!-- Setting fragment resource -->
     <string-array name="settings_playtime_limit_list_labels">
-        <item>2 min</item>
+        <item>30 min</item>
         <item>1.0 hour</item>
-        <item>1.5 hours</item>
+        <item>1.5 hour</item>
         <item>2.0 hours</item>
         <item>2.5 hours</item>
         <item>3.0 hours</item>
     </string-array>
 
     <string-array name="settings_playtime_limit_list_values">
-        <item>2</item>
+        <item>30</item>
         <item>60</item>
         <item>90</item>
         <item>120</item>

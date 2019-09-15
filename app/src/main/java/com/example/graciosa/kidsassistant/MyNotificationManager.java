@@ -97,6 +97,13 @@ public class MyNotificationManager {
         post(context, builder);
     }
 
+    /*
+     * Remove all notifications of this App from the status bar.
+     */
+    public static void cancelNotification(Context context){
+        NotificationManagerCompat.from(context).cancelAll();
+    }
+
     /* Creates a notification channel that show notif in status, do not make noise neither interrupt */
     private void createNotificationChannels(Context context) {
         // Create the NotificationChannel, but only on API 26+ because
@@ -104,15 +111,17 @@ public class MyNotificationManager {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             NotificationManager notificationManager = context.getSystemService(NotificationManager.class);
 
-            // Create channel to show notifs in status bar, make noise and interrupts
+            // Create channel to show notifs in status bar but do not make noise neither interrupt
             String name = "Low importance";
-            NotificationChannel channel = new NotificationChannel(HIGH_IMPORTANCE_CHANNEL_ID, name, NotificationManager.IMPORTANCE_HIGH);
+            NotificationChannel channel = new NotificationChannel(MID_IMPORTANCE_CHANNEL_ID, name,
+                    NotificationManager.IMPORTANCE_LOW);
             channel.setDescription("Progress notifications");
             notificationManager.createNotificationChannel(channel);
 
-            // Create channel to show notifs in status bar but do not make noise neither interrupt
+            // Create channel to show notifs in status bar, make noise and interrupts
             name = "High importance";
-            channel = new NotificationChannel(MID_IMPORTANCE_CHANNEL_ID, name, NotificationManager.IMPORTANCE_LOW);
+            channel = new NotificationChannel(HIGH_IMPORTANCE_CHANNEL_ID, name,
+                    NotificationManager.IMPORTANCE_HIGH);
             channel.setDescription("Near and post timeout notifications");
             channel.enableVibration(true);
             notificationManager.createNotificationChannel(channel);

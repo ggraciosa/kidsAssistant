@@ -28,7 +28,7 @@ import java.util.List;
  * 8. done - store daily played time in database
  * 9. done - Fix orientation change bug
  * 10. Add pause button in notification and a setting to display it or not
- * 11. Pie chart: center text; handle overtime (colors, layout); change notification overtime colors to match it
+ * 11. Pie chart: center text; handle overtime (colors, layout); consider replacing with stacked bar chart.
  * 12. done - handle clock changes e.g. entering and exiting daylight saving time
  * 13. done - execute receiver in a background thread
  * 14. done - Heads up notif does not work in M
@@ -51,9 +51,13 @@ import java.util.List;
  * 29. done - Update pie chart dynamically upon change via TimeStepReceiver.
  * 30. done - Make notification icon colored (https://stackoverflow.com/questions/45874742/android-color-notification-icon).
  * 31. Remove icons from barChart legend.
- * 32. Update history charts dynamically upon change via TimeStepReceiver.
+ * 32. done - Update history charts dynamically via LiveData upon change via TimeStepReceiver.
  * 33. done - Always have 12 bars per chart in history.
  * 34. done - Replace 0-n numbers with played day under each history bar chart xAxis.
+ * 35. Use navigation for fragments management.
+ * 36. Use stacked bars to have in bars an indication of allowed and over played time.
+ * 37. done - Start computing time and launch 1st notification when feature is turned on.
+ * 38. Security: broadcasts permissions, etc.
  */
 
 public class MainActivity extends AppCompatActivity {

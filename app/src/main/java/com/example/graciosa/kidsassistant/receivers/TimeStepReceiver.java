@@ -18,9 +18,17 @@ import com.example.graciosa.kidsassistant.db.PlayedTimeEntity;
 
 public class TimeStepReceiver extends BroadcastReceiver {
 
+    /*****************
+     *** CONSTANTS ***
+     *****************/
+
     final String TAG = TimeStepReceiver.class.getSimpleName();
 
-    private class ProcessTimeStepThread extends Thread {
+    /*********************
+     *** INNER CLASSES ***
+     *********************/
+
+    private class UpdateDbAndPostNotifThread extends Thread {
 
         private Context mContext;
         private boolean mPlaying;
@@ -31,7 +39,7 @@ public class TimeStepReceiver extends BroadcastReceiver {
          * newDay: date has changed, playing info must be reset
          * playing: kids are currently playing, time step must be computed
          */
-        public ProcessTimeStepThread(Context context, boolean newDay, boolean playing) {
+        public UpdateDbAndPostNotifThread(Context context, boolean newDay, boolean playing) {
             mContext = context;
             mNewDay = newDay;
             mPlaying = playing;
@@ -106,6 +114,10 @@ public class TimeStepReceiver extends BroadcastReceiver {
 
     }
 
+    /***************
+     *** METHODS ***
+     ***************/
+
     @Override
     public void onReceive(Context context, Intent intent) {
 
@@ -130,10 +142,10 @@ public class TimeStepReceiver extends BroadcastReceiver {
         }
 
         if (newDay || playing){
-            // Kids are interacting with the device, perform remaining processing in background
-            new ProcessTimeStepThread(context, newDay, playing).start();
+            // Day changed or Kids are interacting with the device
+            // Perform remaining processing in background
+            new UpdateDbAndPostNotifThread(context, newDay, playing).start();
         }
-
     }
 
     private boolean isInteractive(Context context) {
