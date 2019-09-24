@@ -3,7 +3,6 @@ package com.example.graciosa.kidsassistant.receivers;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
-import android.os.Build;
 import android.os.PowerManager;
 
 import com.example.graciosa.kidsassistant.MyLog;
@@ -23,6 +22,14 @@ public class TimeStepReceiver extends BroadcastReceiver {
      *****************/
 
     final String TAG = TimeStepReceiver.class.getSimpleName();
+
+    // Intent action to request to process the elapsed time since last step.
+    public static final String COMPUTE_TIME =
+            "com.example.graciosa.kidsassistant.receivers.timestep.action.COMPUTE_TIME";
+    // Intent action to request to forcely process the elapsed time since last step, i.e., even
+    // if the compute playing time preference in App settings is off.
+    public static final String COMPUTE_TIME_SKIP_PREFERENCE =
+            "com.example.graciosa.kidsassistant.receivers.timestep.action.COMPUTE_TIME_SKIP_PREFERENCE";
 
     /*********************
      *** INNER CLASSES ***
@@ -121,41 +128,40 @@ public class TimeStepReceiver extends BroadcastReceiver {
     @Override
     public void onReceive(Context context, Intent intent) {
 
-        MySharedPrefManager sp = new MySharedPrefManager(context);
-        boolean newDay = sp.hasDateChanged();
-        boolean playing = true;
+        String action = intent.getAction();
 
-        if (!isInteractive(context)) {
-            // Kids are not interacting with the device
-            // Reset elapsed playing time reference
-            sp.resetElapsedPlayedTime();
-            MyLog.d(TAG, "Kids are not interacting");
-            playing = false;
-        }
+        if (COMPUTE_TIME.equals(action) || COMPUTE_TIME_SKIP_PREFERENCE.equals(action)) {
 
-        if (!sp.isComputingPlayingTime()) {
-            // Computing time is off in settings
-            // Reset elapsed playing time reference
-            sp.resetElapsedPlayedTime();
-            MyLog.d(TAG, "Time computation setting is switched off");
-            playing = false;
-        }
+            MyLog.d(TAG, "onReceive: action=" + action);
 
-        if (newDay || playing){
-            // Day changed or Kids are interacting with the device
-            // Perform remaining processing in background
-            new UpdateDbAndPostNotifThread(context, newDay, playing).start();
-        }
-    }
+            MySharedPrefManager sp = new MySharedPrefManager(context);
+            boolean newDay = sp.hasDateChanged();
+            boolean playing = true;
 
-    private boolean isInteractive(Context context) {
-        PowerManager pm = (PowerManager) context.getSystemService(Context.POWER_SERVICE);
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT_WATCH) {
-            // API level >= 20
-            return pm.isInteractive();
-        } else {
-            // API level < 20
-            return pm.isScreenOn();
+            PowerManager pm = (PowerManager) context.getSystemService(Context.POWER_SERVICE);
+            if (!pm.isInteractive()) {
+                // Kids are not interacting with the device
+                // Reset elapsed playing time reference
+                sp.resetElapsedPlayedTime();
+                MyLog.d(TAG, "Kids are not interacting");
+                playing = false;
+            }
+
+            if (!COMPUTE_TIME_SKIP_PREFERENCE.equals(action)) {
+                if (!sp.getComputePlayingTime()) {
+                    // Computing time is off in settings
+                    // Reset elapsed playing time reference
+                    sp.resetElapsedPlayedTime();
+                    MyLog.d(TAG, "Time computation setting is switched off");
+                    playing = false;
+                }
+            }
+
+            if (newDay || playing) {
+                // Day changed or Kids are interacting with the device
+                // Perform remaining processing in background
+                new UpdateDbAndPostNotifThread(context, newDay, playing).start();
+            }
         }
     }
 

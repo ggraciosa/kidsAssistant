@@ -18,46 +18,49 @@ import java.util.List;
 
 /*****
  * TODO:
- * 1. done - Replace PreferenceFragment with PreferenceFragmentCompat
- * 2. done - Icons
- * 3. done - Theme
- * 4. Clean: logs, commented code, not used code, not used resources, etc.
- * 5. done - Pie chart (https://jitpack.io/com/github/PhilJay/MPAndroidChart/v3.0.3/javadoc/)
- * 6. Internationalize and localize
- * 7. done - git hub
- * 8. done - store daily played time in database
- * 9. done - Fix orientation change bug
- * 10. Add pause button in notification and a setting to display it or not
- * 11. Pie chart: center text; handle overtime (colors, layout); consider replacing with stacked bar chart.
- * 12. done - handle clock changes e.g. entering and exiting daylight saving time
- * 13. done - execute receiver in a background thread
- * 14. done - Heads up notif does not work in M
+ * 01. DONE - Replace PreferenceFragment with PreferenceFragmentCompat
+ * 02. DONE - Icons
+ * 03. done - Theme
+ * 04. Clean: logs, commented code, not used code, not used resources, etc.
+ * 05. DONE - Pie chart (https://jitpack.io/com/github/PhilJay/MPAndroidChart/v3.0.3/javadoc/)
+ * 06. Internationalize and localize
+ * 07. DONE - git hub
+ * 08. DONE - store daily played time in database
+ * 09. DONE - Fix orientation change bug
+ * 10. DONE - Add pause/resume actions in notification
+ * 11. Pie chart: replace with stacked bar chart.
+ * 12. DONE - handle clock changes e.g. entering and exiting daylight saving time
+ * 13. DONE - execute receiver in a background thread
+ * 14. DONE - Heads up notif does not work in M
  * 15. Display selected values in preference
  * 16. Bug: settings action bar back navigation arrow is lost upon rotation
- * 17. done - Display played time statistics
+ * 17. DONE - Display played time statistics
  * 18. Bug: invalid default shared preference (computePlayingTime=true, maxPlayingTime=120) is brought
  *     when install App in my Z3 Play P multi user; cleaning app data from Global Settings solves the
  *     issue; issue does not happen in Z2 Play N single user neither G2 M single user.
- * 19. done - Set new data and reset time played upon midnight, even if device is no active.
- * 20. done - Replace Fragment class deprecated in API level 28
- * 21. done - Make bar value color follow bar color.
- * 22. done - Set chart legend to start and end date of that chart.
+ * 19. DONE - Set new data and reset time played upon midnight, even if device is no active.
+ * 20. DONE - Replace Fragment class deprecated in API level 28
+ * 21. DONE - Make bar value color follow bar color.
+ * 22. DONE - Set chart legend to start and end date of that chart.
  * 23. Add action to bar touch e.g. display data, playedTime and limit?
- * 24. done - Display an explanation message in history when there is no data to be displayed.
- * 25. done - Set history chart yAxis minimum value to 0.
+ * 24. DONE - Display an explanation message in history when there is no data to be displayed.
+ * 25. DONE - Set history chart yAxis minimum value to 0.
  * 26. Support light/dark/follow-system modes.
- * 27. done - In notification, replace bottom "Kids Assistant" string with progress e.g. 23/60.
+ * 27. DONE - In notification, replace bottom "Kids Assistant" string with progress e.g. 23/60.
  * 28. Update database and notification when daily limit is changed in settings.
- * 29. done - Update pie chart dynamically upon change via TimeStepReceiver.
- * 30. done - Make notification icon colored (https://stackoverflow.com/questions/45874742/android-color-notification-icon).
+ * 29. DONE - Update pie chart dynamically upon change via TimeStepReceiver.
+ * 30. DONE - Make notification icon colored (https://stackoverflow.com/questions/45874742/android-color-notification-icon).
  * 31. Remove icons from barChart legend.
- * 32. done - Update history charts dynamically via LiveData upon change via TimeStepReceiver.
- * 33. done - Always have 12 bars per chart in history.
- * 34. done - Replace 0-n numbers with played day under each history bar chart xAxis.
+ * 32. DONE - Update history charts dynamically via LiveData upon change via TimeStepReceiver.
+ * 33. DONE - Always have 12 bars per chart in history.
+ * 34. DONE - Replace 0-n numbers with played day under each history bar chart xAxis.
  * 35. Use navigation for fragments management.
- * 36. Use stacked bars to have in bars an indication of allowed and over played time.
- * 37. done - Start computing time and launch 1st notification when feature is turned on.
- * 38. Security: broadcasts permissions, etc.
+ * 36. Use stacked bars in history to have in bars an indication of allowed and over played time.
+ * 37. DONE - Start computing time and launch 1st notification when feature is turned on.
+ * 38. Security: broadcasts permissions, export, etc.
+ * 39. Review typography adherence to material design.
+ * 40. Replace expanded notification action with collapsed notification action (pause/play buttons)
+ * 41. Create a settings to enable/disable notification actions buttons.
  */
 
 public class MainActivity extends AppCompatActivity {

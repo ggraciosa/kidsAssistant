@@ -27,30 +27,36 @@ import static com.example.graciosa.kidsassistant.Constants.INTERVAL;
 
 public class BootCompletedReceiver extends BroadcastReceiver {
 
+    final String TAG = BootCompletedReceiver.class.getSimpleName();
+
     @Override
     public void onReceive(Context context, Intent intent) {
 
-        final String TAG = BootCompletedReceiver.class.getSimpleName();
+        String action = intent.getAction();
 
-        StringBuilder sb = new StringBuilder();
+        if ("android.intent.action.BOOT_COMPLETED".equals(action)) {
 
-        sb.append("Action: " + intent.getAction());
-        String log = sb.toString();
-        MyLog.d(TAG, log);
+            MyLog.d(TAG, "onReceive");
 
-        MySharedPrefManager sp = new MySharedPrefManager(context);
+            StringBuilder sb = new StringBuilder();
+            sb.append("Action: ");
+            sb.append(intent.getAction());
+            MyLog.d(TAG, sb.toString());
 
-        if (!sp.isComputingPlayingTime()){
-            // Computing time is off in settings: do not compute playing time
-            MyLog.d(TAG, "Time computation is switched off: do not turn on time step");
-            return;
+            MySharedPrefManager sp = new MySharedPrefManager(context);
+
+            if (!sp.getComputePlayingTime()) {
+                // Computing time is off in settings: do not compute playing time
+                MyLog.d(TAG, "Time computation is switched off: do not turn on time step");
+                return;
+            }
+
+            // Override default playing time with today's day of the week max playing time
+            sp.setWeekdayPlayTimeLimitOnce();
+
+            // Set alarm to compute elapsed time
+            MyAlarmManager.enableOrUpdate(context, INTERVAL);
+
         }
-
-        // Override default playing time with today's day of the week max playing time
-        sp.setWeekdayPlayTimeLimitOnce();
-
-        // Set alarm to compute elapsed time
-        MyAlarmManager.enableOrUpdate(context, INTERVAL);
-
     }
 }

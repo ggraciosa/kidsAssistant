@@ -12,21 +12,38 @@ import android.os.Build;
 import androidx.core.app.NotificationCompat;
 import androidx.core.app.NotificationManagerCompat;
 
+import com.example.graciosa.kidsassistant.receivers.NotificationActionReceiver;
+
 public class MyNotificationManager {
 
     /*****************
      *** CONSTANTS ***
      *****************/
 
+    final String TAG = MyNotificationManager.class.getSimpleName();
+
     final int NOTIF_ID = 0;
-    final String HIGH_IMPORTANCE_CHANNEL_ID = "KIDS_ASSISTANT_HIGH_IMPORTANCE_NOTIF_CHANNEL";
-    final String MID_IMPORTANCE_CHANNEL_ID = "KIDS_ASSISTANT_MID_IMPORTANCE_NOTIF_CHANNEL";
+    final String HIGH_IMPORTANCE_CHANNEL_ID = "HIGH_IMPORTANCE_NOTIFICATION_CHANNEL_ID";
+    final String MID_IMPORTANCE_CHANNEL_ID = "MID_IMPORTANCE_NOTIFICATION_CHANNEL_ID";
+
+    // Notification action label to pause played time computation
+    private final String ACTION_LABEL_PAUSE = "PAUSE";
+    // Notification action label to resume played time computation
+    private final String ACTION_LABEL_RESUME = "RESUME";
+
+    /**************
+     *** FIELDS ***
+     **************/
+
+    Context mContext;
 
     /***************
      *** METHODS ***
      ***************/
 
     public MyNotificationManager(Context context){
+
+        mContext = context;
         // For API level 26 (Oreo) and above
         createNotificationChannels(context);
     }
@@ -46,6 +63,31 @@ public class MyNotificationManager {
             // not be considered. Need to set priority here.
             builder.setPriority(NotificationCompat.PRIORITY_DEFAULT);
         }
+
+        //builder.setStyle(new androidx.media.app.NotificationCompat.MediaStyle().setShowActionsInCompactView(0));
+        // TODO: below code displays "PAUSE" string underneath notif. To have a pause button to the
+        //  right of the progress bar need to create the layout of a custom view and pass it to
+        //  builder.setCustomContentView().
+        int icon;
+        String actionText;
+        Intent intent = new Intent(mContext, NotificationActionReceiver.class);
+        MySharedPrefManager sp = new MySharedPrefManager(mContext);
+        if (sp.getComputePlayingTime()) {
+            // Play time is being computed: offer the action to pause.
+            MyLog.d(TAG,"postProgressMediumImportance: update notif action to PAUSE");
+            icon = R.drawable.ic_pause;
+            actionText = ACTION_LABEL_PAUSE;
+            intent.setAction(NotificationActionReceiver.ACTION_PAUSE);
+        } else {
+            // Play time computation has been already paused by user: offer the action to resume.
+            MyLog.d(TAG,"postProgressMediumImportance: update notif action to RESUME");
+            icon = R.drawable.ic_play;
+            actionText = ACTION_LABEL_RESUME;
+            intent.setAction(NotificationActionReceiver.ACTION_RESUME);
+        }
+        PendingIntent pendingIntent = PendingIntent.getBroadcast(mContext, 0, intent, 0);
+        builder.addAction(icon, actionText, pendingIntent);
+
         post(context, builder);
     }
 
@@ -98,7 +140,7 @@ public class MyNotificationManager {
     }
 
     /*
-     * Remove all notifications of this App from the status bar.
+     * Clean all notifications of this App from the status bar.
      */
     public static void cancelNotification(Context context){
         NotificationManagerCompat.from(context).cancelAll();

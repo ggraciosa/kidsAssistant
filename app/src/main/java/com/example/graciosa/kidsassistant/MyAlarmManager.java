@@ -32,6 +32,7 @@ public class MyAlarmManager {
 
     static private PendingIntent buildPendingIntent(Context context){
         Intent alarmIntent = new Intent(context, TimeStepReceiver.class);
+        alarmIntent.setAction(TimeStepReceiver.COMPUTE_TIME);
         PendingIntent pendingIntent = PendingIntent.getBroadcast(context, 0, alarmIntent, 0);
         return pendingIntent;
     }

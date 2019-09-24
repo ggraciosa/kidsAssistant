@@ -2,15 +2,14 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.example.graciosa.kidsassistant">
 
-    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
-
     <application
         android:allowBackup="true"
-        android:label="@string/app_name"
         android:icon="@mipmap/ic_launcher_hourglass"
+        android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_hourglass"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
+
         <activity android:name=".MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -31,8 +30,24 @@
             android:name=".receivers.TimeStepReceiver"
             android:enabled="true"
             android:exported="true">
+            <intent-filter>
+                <action android:name="com.example.graciosa.kidsassistant.receivers.timestep.action.COMPUTE_TIME"></action>
+                <action android:name="com.example.graciosa.kidsassistant.receivers.timestep.action.COMPUTE_TIME_SKIP_PREFERENCE"></action>
+            </intent-filter>
+        </receiver>
+
+        <receiver
+            android:name=".receivers.NotificationActionReceiver"
+            android:enabled="true"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="com.example.graciosa.kidsassistant.receivers.notification.action.PAUSE"></action>
+                <action android:name="com.example.graciosa.kidsassistant.receivers.notification.action.RESUME"></action>
+            </intent-filter>
         </receiver>
 
     </application>
+
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
 
 </manifest>

@@ -141,10 +141,16 @@ public class MySharedPrefManager {
         return pt;
     }
 
-    public boolean isComputingPlayingTime() {
+    public boolean getComputePlayingTime() {
         return mSettingsSharedPref.getBoolean(
                 SHARED_PREF_SETTINGS_COMPUTE_PLAYING_TIME_KEY,
                 SHARED_PREF_SETTINGS_COMPUTE_PLAYING_TIME_DEFAULT_VALUE);
+    }
+
+    public void setComputePlayingTime(boolean compute) {
+        Editor editor = mSettingsSharedPref.edit();
+        editor.putBoolean(SHARED_PREF_SETTINGS_COMPUTE_PLAYING_TIME_KEY, compute);
+        editor.commit();
     }
 
     // true if a new day
