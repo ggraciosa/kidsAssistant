@@ -2,7 +2,6 @@ package com.example.graciosa.kidsassistant.fragments;
 
 import android.content.SharedPreferences;
 import android.graphics.Color;
-import android.os.Build;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
@@ -16,10 +15,12 @@ import com.example.graciosa.kidsassistant.MySharedPrefManager;
 import com.example.graciosa.kidsassistant.R;
 import com.github.mikephil.charting.animation.Easing;
 import com.github.mikephil.charting.charts.PieChart;
+import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.data.PieData;
 import com.github.mikephil.charting.data.PieDataSet;
 import com.github.mikephil.charting.data.PieEntry;
-import com.github.mikephil.charting.utils.ColorTemplate;
+import com.github.mikephil.charting.formatter.IValueFormatter;
+import com.github.mikephil.charting.utils.ViewPortHandler;
 
 import java.util.ArrayList;
 
@@ -39,6 +40,21 @@ public class PieChartFragment extends Fragment {
     private MySharedPrefManager mMySp;
     private SharedPreferences.OnSharedPreferenceChangeListener mListener;
 
+    /*********************
+     *** INNER CLASSES ***
+     *********************/
+
+    private class IntegerFormatter implements IValueFormatter {
+
+        @Override
+        public String getFormattedValue(float value,
+                                        Entry entry,
+                                        int dataSetIndex,
+                                        ViewPortHandler viewPortHandler) {
+            Integer v = (int) value;
+            return v.toString();
+        }
+    }
     /***************
      *** METHODS ***
      ***************/
@@ -126,44 +142,33 @@ public class PieChartFragment extends Fragment {
 
         int played = (int) mMySp.getPlayedTimeInMinutes();
         int limit = (int) mMySp.getPlayTimeLimitInMinutes();
-        int playedTimePie = Math.min(played,    limit);
-        int remainingTimePie = limit - playedTimePie;
+        boolean overtime = played > limit;
         ArrayList<PieEntry> yValues = new ArrayList<>();
-        yValues.add(new PieEntry(playedTimePie, "Played"));
-        yValues.add(new PieEntry(remainingTimePie, "Remaining"));
-        PieDataSet dataSet = new PieDataSet(yValues, null);
-        dataSet.setSliceSpace(2f);
-        dataSet.setSelectionShift(5f);
+        int[] colors = new int[2];
 
-        // Set pie color
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            // API level >= 23
-            if (played <= limit) {
-                // Play time is within limit
-                dataSet.setColors(getResources().getColor(R.color.colorAccent, null),
-                        getResources().getColor(R.color.colorLightGrey, null));
-            } else {
-                // Play time limit exceeded
-                dataSet.setColors(getResources().getColor(R.color.colorOrange, null),
-                        getResources().getColor(R.color.colorOrange, null));
-            }
+        if (overtime){
+            yValues.add(new PieEntry(limit, "Allowed"));
+            yValues.add(new PieEntry(played - limit, "Overtime"));
+            colors[0] = getResources().getColor(R.color.colorAccent, null);
+            colors[1] = getResources().getColor(R.color.colorOrange, null);
 
         } else {
-            // API level < 23
-            dataSet.setColors(ColorTemplate.PASTEL_COLORS);
+            yValues.add(new PieEntry(played, "Played"));
+            yValues.add(new PieEntry(limit - played, "Remaining"));
+            colors[0] = getResources().getColor(R.color.colorAccent, null);
+            colors[1] = getResources().getColor(R.color.colorLightGrey, null);
         }
+
+        PieDataSet dataSet = new PieDataSet(yValues, null);
+        dataSet.setColors(colors);
+        dataSet.setValueFormatter(new IntegerFormatter());
+        dataSet.setSliceSpace(2f);
+        dataSet.setSelectionShift(5f);
 
         PieData pieData = new PieData((dataSet));
         pieData.setValueTextSize(20f);
 
-        // pieData.setValueTextColor(Color.DKGRAY);
-        // ArrayList<Integer> textColors = new ArrayList<>();
-        // textColors.add(Color.DKGRAY);
-        // textColors.add(Color.LTGRAY);
-        // pieData.setValueTextColors(textColors);
-        // pieData.setValueTextColor(Color.DKGRAY);
-
+        pieChart.setUsePercentValues(false);
         pieChart.setData(pieData);
     }
-
 }

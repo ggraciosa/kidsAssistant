@@ -53,7 +53,7 @@ public class HistoryFragment extends Fragment {
      *** INNER CLASSES ***
      *********************/
 
-    public class IntegerFormatter implements IValueFormatter {
+    private class IntegerFormatter implements IValueFormatter {
 
         @Override
         public String getFormattedValue(float value,

@@ -28,7 +28,7 @@ import java.util.List;
  * 08. DONE - store daily played time in database
  * 09. DONE - Fix orientation change bug
  * 10. DONE - Add pause/resume actions in notification
- * 11. Pie chart: replace with stacked bar chart.
+ * 11. DONE - Display overtime in pie
  * 12. DONE - handle clock changes e.g. entering and exiting daylight saving time
  * 13. DONE - execute receiver in a background thread
  * 14. DONE - Heads up notif does not work in M
@@ -45,7 +45,7 @@ import java.util.List;
  * 23. Add action to bar touch e.g. display data, playedTime and limit?
  * 24. DONE - Display an explanation message in history when there is no data to be displayed.
  * 25. DONE - Set history chart yAxis minimum value to 0.
- * 26. Support light/dark/follow-system modes.
+ * 26. Support light/dark/follow-system modes (https://developer.android.com/guide/topics/ui/look-and-feel/darktheme).
  * 27. DONE - In notification, replace bottom "Kids Assistant" string with progress e.g. 23/60.
  * 28. Update database and notification when daily limit is changed in settings.
  * 29. DONE - Update pie chart dynamically upon change via TimeStepReceiver.
@@ -54,11 +54,11 @@ import java.util.List;
  * 32. DONE - Update history charts dynamically via LiveData upon change via TimeStepReceiver.
  * 33. DONE - Always have 12 bars per chart in history.
  * 34. DONE - Replace 0-n numbers with played day under each history bar chart xAxis.
- * 35. Use navigation for fragments management.
+ * 35. Use navigation for fragments management (https://codelabs.developers.google.com).
  * 36. Use stacked bars in history to have in bars an indication of allowed and over played time.
  * 37. DONE - Start computing time and launch 1st notification when feature is turned on.
  * 38. Security: broadcasts permissions, export, etc.
- * 39. Review typography adherence to material design.
+ * 39. Review typography adherence to material design (https://codelabs.developers.google.com).
  * 40. Replace expanded notification action with collapsed notification action (pause/play buttons)
  * 41. Create a settings to enable/disable notification actions buttons.
  */
