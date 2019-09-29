@@ -57,11 +57,12 @@ import android.view.MenuItem;
  *     when install App in my Z3 Play P multi user; cleaning app data from Global Settings solves the
  *     issue; issue does not happen in Z2 Play N single user neither G2 M single user.
  * 40. Add action to bar touch e.g. display data, playedTime and limit?
- * 41. Add app theme menu light/dark/follow-system  (https://developer.android.com/guide/topics/ui/look-and-feel/darktheme).
+ * 41. Add app theme switch light/dark/follow-system (https://developer.android.com/guide/topics/ui/look-and-feel/darktheme).
  * 42. Update database and notification when daily limit is changed in settings.
  * 43. Change app bar text to white in light theme. Replace action bar with toolbar?
  * 44. Add elevation to history charts. Host them in a card view?
  * 45. Use the exact blue and orange colors of the app launcher icon as app brand colors.
+ * 46. Profile battery consumption. If alarm manager is greedy check if possible switch time computing upon screen on/off.
  */
 
 public class MainActivity extends AppCompatActivity {
@@ -71,14 +72,13 @@ public class MainActivity extends AppCompatActivity {
      *****************/
 
     final String TAG = MainActivity.class.getSimpleName();
-    final String INST_DATA_KEY_SHOW_OPTIONS_MENU = "key_show_options_menu";
     final String INST_DATA_KEY_FRAG = "key_frag";
 
     /***************
      *** FIELDS ***
      ***************/
 
-    private boolean mShowOptionMenu;
+    private boolean mShowOptionsMenu;
     private NavController mNavController;
 
     /***************
@@ -115,10 +115,10 @@ public class MainActivity extends AppCompatActivity {
                     // 3. Pressing back in the bottom navigation bar when in the other fragments.
                     // OBS: Pressing back in the action bar does not fall here. See onOptionsItemSelected.
                     MyLog.d(TAG, "addOnDestinationChangedListener: dest = pie chart");
-                    mShowOptionMenu = true;
+                    mShowOptionsMenu = true;
                 } else {
                     MyLog.d(TAG, "addOnDestinationChangedListener: dest = settings or hist");
-                    mShowOptionMenu = false;
+                    mShowOptionsMenu = false;
                 }
                 // Trigger redisplay of options menu
                 invalidateOptionsMenu();
@@ -132,10 +132,9 @@ public class MainActivity extends AppCompatActivity {
         if (savedInstanceState == null) {
             MyLog.d(TAG,"OnCreate: savedInstanceState == null");
             // App being started with no previous state
-            mShowOptionMenu = true;
+            mShowOptionsMenu = true;
         } else {
             // System restarted app e.g. due to orientation change: resume fragment displayed at restart
-            mShowOptionMenu = savedInstanceState.getBoolean(INST_DATA_KEY_SHOW_OPTIONS_MENU);
             String frag = savedInstanceState.getString(INST_DATA_KEY_FRAG);
             // Decide which fragment to navigate to
             if (frag.equals(getResources().getString(R.string.pie_chart_frag_label))){
@@ -150,7 +149,6 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onSaveInstanceState(Bundle outState){
-        outState.putBoolean(INST_DATA_KEY_SHOW_OPTIONS_MENU, mShowOptionMenu);
         outState.putString(INST_DATA_KEY_FRAG, getVisibleFrag());
         MyLog.d(TAG, "onSaveInstanceState = " + getVisibleFrag());
     }
@@ -163,8 +161,6 @@ public class MainActivity extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
         MyLog.d(TAG, "onResume");
-        //TODO: may unnecessary after navigation
-        mShowOptionMenu = true;
     }
 
     // Called only during activity creation
@@ -178,7 +174,7 @@ public class MainActivity extends AppCompatActivity {
     // Invoked by system in response to invalidateOptionsMenu()
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
-        return mShowOptionMenu;
+        return mShowOptionsMenu;
     }
 
     @Override

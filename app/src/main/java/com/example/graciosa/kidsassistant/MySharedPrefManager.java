@@ -26,12 +26,12 @@ public class MySharedPrefManager {
 
     public static final String TAG = MySharedPrefManager.class.getSimpleName();
 
-    // SHARED PREFERENCE: SettingsSharedPref (default settings)
+    //// SHARED PREFERENCE: SettingsSharedPref (default settings)
     // Default (settings) shared preferences constants
-    // Settings preference switch to enable/disable playing time computation
+    // Settings switch preference to enable/disable playing time computation
     public static final String SHARED_PREF_SETTINGS_COMPUTE_PLAYING_TIME_KEY = "computePlayingTime";
     public static final boolean SHARED_PREF_SETTINGS_COMPUTE_PLAYING_TIME_DEFAULT_VALUE = true;
-    // Max allowed playing time in current day in minutes
+    // Settings list preference to select current day playtime limit in minutes
     public static final String SHARED_PREF_SETTINGS_PLAY_TIME_LIMIT_KEY = "playTimeLimit";
     public static final String SHARED_PREF_SETTINGS_PLAY_TIME_LIMIT_SUNDAY_VALUE = "90";
     public static final String SHARED_PREF_SETTINGS_PLAY_TIME_LIMIT_MONDAY_VALUE = "60";
@@ -40,8 +40,13 @@ public class MySharedPrefManager {
     public static final String SHARED_PREF_SETTINGS_PLAY_TIME_LIMIT_THURSDAY_VALUE = "60";
     public static final String SHARED_PREF_SETTINGS_PLAY_TIME_LIMIT_FRIDAY_VALUE = "60";
     public static final String SHARED_PREF_SETTINGS_PLAY_TIME_LIMIT_SATURDAY_VALUE = "90";
+    // Settings list preference to select theme
+    public static final String SHARED_PREF_SETTINGS_THEME_KEY = "theme";
+    public static final String SHARED_PREF_SETTINGS_THEME_LIGHT_VALUE = "Light";
+    public static final String SHARED_PREF_SETTINGS_THEME_DARK_VALUE = "Dark";
+    public static final String SHARED_PREF_SETTINGS_THEME_SYSTEM_DEFAULT_VALUE = "System default";
 
-    // SHARED PREFERENCE: PlayedTimeSharedPref (played time and associated data)
+    //// SHARED PREFERENCE: PlayedTimeSharedPref (played time and associated data)
     // File name
     public static final String SHARED_PREF_PLAYED_FILENAME = "auxiliarSharedPref";
     // Auxiliar data to calculate daily usage (elapsed playing time)
@@ -190,6 +195,11 @@ public class MySharedPrefManager {
             MyLog.d(TAG, "setWeekdayPlayTimeLimitOnce: playTimeLimit = " + weekdayPlayTimeLimit +
                     ", updated=" + firstCall);
         }
+    }
+
+    public String getTheme(){
+        return mSettingsSharedPref.getString(SHARED_PREF_SETTINGS_THEME_KEY,
+                SHARED_PREF_SETTINGS_THEME_LIGHT_VALUE);
     }
 
     private String getWeekdayPlayTimeLimit(){

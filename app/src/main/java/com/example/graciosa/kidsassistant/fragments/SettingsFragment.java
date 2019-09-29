@@ -1,5 +1,6 @@
 package com.example.graciosa.kidsassistant.fragments;
 
+import androidx.appcompat.app.AppCompatDelegate;
 import androidx.preference.Preference;
 import androidx.preference.PreferenceFragmentCompat;
 import androidx.preference.SwitchPreference;
@@ -18,6 +19,13 @@ import com.example.graciosa.kidsassistant.MySharedPrefManager;
 import com.example.graciosa.kidsassistant.R;
 import com.example.graciosa.kidsassistant.receivers.TimeStepReceiver;
 
+import static androidx.appcompat.app.AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM;
+import static androidx.appcompat.app.AppCompatDelegate.MODE_NIGHT_NO;
+import static androidx.appcompat.app.AppCompatDelegate.MODE_NIGHT_YES;
+import static com.example.graciosa.kidsassistant.MySharedPrefManager.SHARED_PREF_SETTINGS_THEME_DARK_VALUE;
+import static com.example.graciosa.kidsassistant.MySharedPrefManager.SHARED_PREF_SETTINGS_THEME_LIGHT_VALUE;
+import static com.example.graciosa.kidsassistant.MySharedPrefManager.SHARED_PREF_SETTINGS_THEME_SYSTEM_DEFAULT_VALUE;
+
 
 /**
  *  Handles the Settings menu items
@@ -32,6 +40,8 @@ public class SettingsFragment extends PreferenceFragmentCompat
     public void onCreate(Bundle savedInstanceState) {
 
         super.onCreate(savedInstanceState);
+
+        MyLog.d(TAG, "onCreate");
 
         SwitchPreference computePlayTimePref = (SwitchPreference) findPreference("computePlayingTime");
         computePlayTimePref.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
@@ -75,6 +85,28 @@ public class SettingsFragment extends PreferenceFragmentCompat
                 // the switched-off time when toggle is later switched-on.
                 sp.resetElapsedPlayedTime();
             }
+        } else if (key.equals(MySharedPrefManager.SHARED_PREF_SETTINGS_THEME_KEY)) {
+            String theme = sp.getTheme();
+            int mode;
+            switch (theme){
+                case SHARED_PREF_SETTINGS_THEME_LIGHT_VALUE:
+                    mode = MODE_NIGHT_NO;
+                    break;
+
+                case SHARED_PREF_SETTINGS_THEME_DARK_VALUE:
+                    mode = MODE_NIGHT_YES;
+                    break;
+
+                case SHARED_PREF_SETTINGS_THEME_SYSTEM_DEFAULT_VALUE:
+                    mode = MODE_NIGHT_FOLLOW_SYSTEM;
+                    break;
+
+                 default:
+                    MyLog.e(TAG, "onSharedPreferenceChanged: unknown theme. Set light theme.");
+                    mode = MODE_NIGHT_NO;
+            }
+            // Update App mode.
+            AppCompatDelegate.setDefaultNightMode(mode);
         }
     }
 

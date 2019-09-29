@@ -11,7 +11,7 @@
     <string name="settings_frag_label">Settings</string>
     <string name="history_frag_label">History</string>
 
-    <!-- Setting fragment resource -->
+    <!-- Settings fragment common (all Android API level) resources -->
     <string-array name="settings_playtime_limit_list_labels">
         <item>30 min</item>
         <item>1.0 hour</item>
@@ -28,6 +28,30 @@
         <item>120</item>
         <item>150</item>
         <item>180</item>
+    </string-array>
+
+    <!-- Theme values for Android API >= P (28) which provides global settings theme switch -->
+    <string-array name="settings_theme_v28_list_labels">
+        <item>Light</item>
+        <item>Dark</item>
+        <item>System default</item>
+    </string-array>
+
+    <string-array name="settings_theme_v28_list_values">
+        <item>Light</item>
+        <item>Dark</item>
+        <item>System default</item>
+    </string-array>
+
+    <!-- Theme values for Android API < P (28) which does NOT provide global settings theme switch -->
+    <string-array name="settings_theme_list_labels">
+        <item>Light</item>
+        <item>Dark</item>
+    </string-array>
+
+    <string-array name="settings_theme_list_values">
+        <item>Light</item>
+        <item>Dark</item>
     </string-array>
 
     <!-- History fragment resources -->

@@ -21,8 +21,8 @@
         android:dialogTitle="What's your favorite theme?"
         android:title="Theme"
         android:summary="%1$s"
-        android:entries="@array/settings_theme_list_labels"
-        android:entryValues="@array/settings_theme_list_values"
-        android:defaultValue="Light" />
+        android:entries="@array/settings_theme_v28_list_labels"
+        android:entryValues="@array/settings_theme_v28_list_values"
+        android:defaultValue="System default" />
 
 </PreferenceScreen>
