@@ -1,66 +1,63 @@
 package com.example.graciosa.kidsassistant;
 
 import android.preference.PreferenceManager;
-import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
+
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.navigation.NavController;
+import androidx.navigation.NavDestination;
+import androidx.navigation.Navigation;
+import androidx.navigation.ui.NavigationUI;
 
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 
-import com.example.graciosa.kidsassistant.fragments.HistoryFragment;
-import com.example.graciosa.kidsassistant.fragments.PieChartFragment;
-import com.example.graciosa.kidsassistant.fragments.SettingsFragment;
-
-import java.util.List;
-
 /*****
  * TODO:
  * 01. DONE - Replace PreferenceFragment with PreferenceFragmentCompat
  * 02. DONE - Icons
- * 03. done - Theme
- * 04. Clean: logs, commented code, not used code, not used resources, etc.
- * 05. DONE - Pie chart (https://jitpack.io/com/github/PhilJay/MPAndroidChart/v3.0.3/javadoc/)
- * 06. Internationalize and localize
- * 07. DONE - git hub
- * 08. DONE - store daily played time in database
- * 09. DONE - Fix orientation change bug
- * 10. DONE - Add pause/resume actions in notification
- * 11. DONE - Display overtime in pie
- * 12. DONE - handle clock changes e.g. entering and exiting daylight saving time
- * 13. DONE - execute receiver in a background thread
- * 14. DONE - Heads up notif does not work in M
- * 15. Display selected values in preference
- * 16. Bug: settings action bar back navigation arrow is lost upon rotation
- * 17. DONE - Display played time statistics
- * 18. Bug: invalid default shared preference (computePlayingTime=true, maxPlayingTime=120) is brought
+ * 03. DONE - Theme
+ * 04. DONE - Pie chart (https://jitpack.io/com/github/PhilJay/MPAndroidChart/v3.0.3/javadoc/)
+ * 05. DONE - git hub
+ * 06. DONE - store daily played time in database
+ * 07. DONE - Fix orientation change bug
+ * 08. DONE - Add pause/resume actions in notification
+ * 09. DONE - Display overtime in pie
+ * 10. DONE - handle clock changes e.g. entering and exiting daylight saving time
+ * 11. DONE - execute receiver in a background thread
+ * 12. DONE - Heads up notif does not work in M
+ * 13. DONE - Bug: settings action bar back navigation arrow is lost upon rotation
+ * 14. DONE - Display played time statistics
+ * 15. DONE - Set new data and reset time played upon midnight, even if device is no active.
+ * 26. DONE - Replace Fragment class deprecated in API level 28
+ * 17. DONE - Make bar value color follow bar color.
+ * 18. DONE - Set chart legend to start and end date of that chart.
+ * 19. DONE - Display an explanation message in history when there is no data to be displayed.
+ * 20. DONE - Set history chart yAxis minimum value to 0.
+ * 21. DONE - In notification, replace bottom "Kids Assistant" string with progress e.g. 23/60.
+ * 22. DONE - Update pie chart dynamically upon change via TimeStepReceiver.
+ * 23. DONE - Make notification icon colored (https://stackoverflow.com/questions/45874742/android-color-notification-icon).
+ * 24. DROP - Remove icons from barChart legend.
+ * 25. DONE - Update history charts dynamically via LiveData upon change via TimeStepReceiver.
+ * 26. DONE - Always have 12 bars per chart in history.
+ * 27. DONE - Replace 0-n numbers with played day under each history bar chart xAxis.
+ * 28. DONE - Use navigation for fragments management (https://codelabs.developers.google.com).
+ * 29. DONE - Start computing time and launch 1st notification when feature is turned on.
+ * 30. Use stacked bars in history to have in bars an indication of allowed and over played time.
+ * 31. Security: broadcasts permissions, export, etc.
+ * 32. Review typography adherence to material design (https://codelabs.developers.google.com).
+ * 33. Replace expanded notification action with collapsed notification action (pause/play buttons)?
+ * 34. Create a settings to enable/disable notification actions buttons?
+ * 35. Internationalize and localize
+ * 36. Clean: logs, commented code, not used code, not used resources, etc.
+ * 37. Display selected values in preference
+ * 38. Bug: invalid default shared preference (computePlayingTime=true, maxPlayingTime=120) is brought
  *     when install App in my Z3 Play P multi user; cleaning app data from Global Settings solves the
  *     issue; issue does not happen in Z2 Play N single user neither G2 M single user.
- * 19. DONE - Set new data and reset time played upon midnight, even if device is no active.
- * 20. DONE - Replace Fragment class deprecated in API level 28
- * 21. DONE - Make bar value color follow bar color.
- * 22. DONE - Set chart legend to start and end date of that chart.
- * 23. Add action to bar touch e.g. display data, playedTime and limit?
- * 24. DONE - Display an explanation message in history when there is no data to be displayed.
- * 25. DONE - Set history chart yAxis minimum value to 0.
- * 26. Support light/dark/follow-system modes (https://developer.android.com/guide/topics/ui/look-and-feel/darktheme).
- * 27. DONE - In notification, replace bottom "Kids Assistant" string with progress e.g. 23/60.
- * 28. Update database and notification when daily limit is changed in settings.
- * 29. DONE - Update pie chart dynamically upon change via TimeStepReceiver.
- * 30. DONE - Make notification icon colored (https://stackoverflow.com/questions/45874742/android-color-notification-icon).
- * 31. Remove icons from barChart legend.
- * 32. DONE - Update history charts dynamically via LiveData upon change via TimeStepReceiver.
- * 33. DONE - Always have 12 bars per chart in history.
- * 34. DONE - Replace 0-n numbers with played day under each history bar chart xAxis.
- * 35. Use navigation for fragments management (https://codelabs.developers.google.com).
- * 36. Use stacked bars in history to have in bars an indication of allowed and over played time.
- * 37. DONE - Start computing time and launch 1st notification when feature is turned on.
- * 38. Security: broadcasts permissions, export, etc.
- * 39. Review typography adherence to material design (https://codelabs.developers.google.com).
- * 40. Replace expanded notification action with collapsed notification action (pause/play buttons)
- * 41. Create a settings to enable/disable notification actions buttons.
+ * 39. Add action to bar touch e.g. display data, playedTime and limit?
+ * 40. Support light/dark/follow-system modes (https://developer.android.com/guide/topics/ui/look-and-feel/darktheme).
+ * 41. Update database and notification when daily limit is changed in settings.
  */
 
 public class MainActivity extends AppCompatActivity {
@@ -72,19 +69,13 @@ public class MainActivity extends AppCompatActivity {
     final String TAG = MainActivity.class.getSimpleName();
     final String INST_DATA_KEY_SHOW_OPTIONS_MENU = "key_show_options_menu";
     final String INST_DATA_KEY_FRAG = "key_frag";
-    final String TAG_FRAG_SETTINGS = "frag_settings";
-    final String TAG_FRAG_PIE_CHART = "frag_pie_chart";
-    final String TAG_FRAG_HISTORY = "frag_history";
 
     /***************
      *** FIELDS ***
      ***************/
 
     private boolean mShowOptionMenu;
-    private FragmentManager mFragMgr;
-    private SettingsFragment mSettingsFragment;
-    private PieChartFragment mPieChartFragment;
-    private HistoryFragment mHistoryFragment;
+    private NavController mNavController;
 
     /***************
      *** METHODS ***
@@ -94,6 +85,8 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        MyLog.d(TAG, "onCreate");
+
         // Set preference default values
         PreferenceManager.setDefaultValues(this, R.xml.settings, false);
 
@@ -102,78 +95,71 @@ public class MainActivity extends AppCompatActivity {
         MySharedPrefManager sp = new MySharedPrefManager(getApplicationContext());
         sp.setWeekdayPlayTimeLimitOnce();
 
-        // Init saved state independent data
-        mFragMgr = getSupportFragmentManager();
-        mPieChartFragment = new PieChartFragment();
-        mSettingsFragment = new SettingsFragment();
-        mHistoryFragment = new HistoryFragment();
         setContentView(R.layout.activity_main);
 
+        mNavController = Navigation.findNavController(this, R.id.nav_host_fragment);
+        mNavController.addOnDestinationChangedListener(new NavController.OnDestinationChangedListener() {
+            @Override
+            public void onDestinationChanged(NavController controller,
+                                             NavDestination destination,
+                                             Bundle arguments) {
+                // Navigation is its way to move to a new destination (fragment).
+                if(destination.getId() == R.id.pieChartFragment) {
+                    // Triggers that fall here:
+                    // 1. App creation with not previous state
+                    // 2. App re-creation with previous state e.g. due to orientation change.
+                    // 3. Pressing back in the bottom navigation bar when in the other fragments.
+                    // OBS: Pressing back in the action bar does not fall here. See onOptionsItemSelected.
+                    MyLog.d(TAG, "addOnDestinationChangedListener: dest = pie chart");
+                    mShowOptionMenu = true;
+                } else {
+                    MyLog.d(TAG, "addOnDestinationChangedListener: dest = settings or hist");
+                    mShowOptionMenu = false;
+                }
+                // Trigger redisplay of options menu
+                invalidateOptionsMenu();
+            }
+        });
+
+        // Request NavigationUI to manage the action bar
+        NavigationUI.setupActionBarWithNavController(this, mNavController);
+
+        // Handle saved state independent data
         if (savedInstanceState == null) {
+            MyLog.d(TAG,"OnCreate: savedInstanceState == null");
             // App being started with no previous state
-            // Init data
             mShowOptionMenu = true;
-            // init UI
-            addFragPieChart();
         } else {
-            // System is restarting app for instance due to orientation change and will resume previous state
+            // System restarted app e.g. due to orientation change: resume fragment displayed at restart
             mShowOptionMenu = savedInstanceState.getBoolean(INST_DATA_KEY_SHOW_OPTIONS_MENU);
             String frag = savedInstanceState.getString(INST_DATA_KEY_FRAG);
-            switch (frag) {
-                case TAG_FRAG_PIE_CHART:
-                    addFragPieChart();
-                    break;
-                case TAG_FRAG_SETTINGS:
-                    addFragSettings();
-                    break;
-                case TAG_FRAG_HISTORY:
-                    addFragHistory();
-                    break;
+            // Decide which fragment to navigate to
+            if (frag.equals(getResources().getString(R.string.pie_chart_frag_label))){
+                // Nothing to do since Navigation controller will display PieChart as the start/home navigation fragment
+            } else if (frag.equals(getResources().getString(R.string.settings_frag_label))){
+                mNavController.navigate(R.id.action_pieChartFragment_to_settingsFragment);
+            } else if (frag.equals(getResources().getString(R.string.history_frag_label))){
+                mNavController.navigate(R.id.action_pieChartFragment_to_historyFragment);
             }
         }
-    }
-
-    private void addFragPieChart(){
-        mFragMgr.beginTransaction()
-                .add(R.id.main_activity_container, mPieChartFragment, TAG_FRAG_PIE_CHART)
-                .commit();
-    }
-
-    private void addFragSettings(){
-        mFragMgr.beginTransaction()
-                .add(R.id.main_activity_container, mSettingsFragment, TAG_FRAG_SETTINGS)
-                .commit();
-    }
-
-    private void addFragHistory(){
-        mFragMgr.beginTransaction()
-                .add(R.id.main_activity_container, mHistoryFragment, TAG_FRAG_HISTORY)
-                .commit();
     }
 
     @Override
     protected void onSaveInstanceState(Bundle outState){
         outState.putBoolean(INST_DATA_KEY_SHOW_OPTIONS_MENU, mShowOptionMenu);
-        outState.putString(INST_DATA_KEY_FRAG, getVisibleFragmentTag());
+        outState.putString(INST_DATA_KEY_FRAG, getVisibleFrag());
+        MyLog.d(TAG, "onSaveInstanceState = " + getVisibleFrag());
     }
 
-    // Gets the name of the fragment currently displayed
-    private String getVisibleFragmentTag(){
-        List<Fragment> fragments = mFragMgr.getFragments();
-        if (fragments != null){
-            for (Fragment fragment : fragments){
-                if (fragment != null && fragment.isVisible()) {
-                    MyLog.d(TAG, fragment.getTag());
-                    return fragment.getTag();
-                }
-            }
-        }
-        return null;
+    private String getVisibleFrag(){
+        return mNavController.getCurrentDestination().getLabel().toString();
     }
 
     @Override
     protected void onResume() {
         super.onResume();
+        MyLog.d(TAG, "onResume");
+        //TODO: may unnecessary after navigation
         mShowOptionMenu = true;
     }
 
@@ -196,43 +182,21 @@ public class MainActivity extends AppCompatActivity {
         // Handle menu item selection
         switch (item.getItemId()) {
             case android.R.id.home:
-                // Handles action bar back button
-                mFragMgr.beginTransaction().remove(mSettingsFragment).commit();
-                // Remove back button from action bar
-                getSupportActionBar().setDisplayHomeAsUpEnabled(false);
-                // Trigger redisplay of options menu
-                mShowOptionMenu = true;
-                invalidateOptionsMenu();
-                // Redisplay pie chart
-                mFragMgr.beginTransaction()
-                        .replace(R.id.main_activity_container, mPieChartFragment, TAG_FRAG_PIE_CHART)
-                        .commit();
+                MyLog.d(TAG, "onOptionsItemSelected: Action bar back button selected");
+                // Action bar back button pressed
+                // Navigation controller will display PieChart as the start/home navigation fragment
+                // TODO: there must be a way for Navigation to pop the stack itself.
+                mNavController.popBackStack();
                 return true;
 
             case R.id.settings_id:
-                MyLog.d(TAG, "Settings menu item selected");
-                // Display the fragment as the main content.
-                mFragMgr.beginTransaction()
-                        .replace(R.id.main_activity_container, mSettingsFragment, TAG_FRAG_SETTINGS)
-                        .commit();
-                // Set back button in action bar
-                getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-                // Trigger removal of options menu
-                mShowOptionMenu = false;
-                invalidateOptionsMenu();
+                MyLog.d(TAG, "onOptionsItemSelected: Settings menu item selected");
+                mNavController.navigate(R.id.action_pieChartFragment_to_settingsFragment);
                 return true;
 
             case R.id.history_id:
-                MyLog.d(TAG, "History menu item selected");
-                // Display the fragment as the main content.
-                mFragMgr.beginTransaction()
-                        .replace(R.id.main_activity_container, mHistoryFragment, TAG_FRAG_HISTORY)
-                        .commit();
-                // Set back button in action bar
-                getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-                // Trigger removal of options menu
-                mShowOptionMenu = false;
-                invalidateOptionsMenu();
+                MyLog.d(TAG, "onOptionsItemSelected: History menu item selected");
+                mNavController.navigate(R.id.action_pieChartFragment_to_historyFragment);
                 return true;
 
             default:

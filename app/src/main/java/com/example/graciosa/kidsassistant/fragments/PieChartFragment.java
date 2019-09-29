@@ -67,6 +67,9 @@ public class PieChartFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
 
         super.onCreate(savedInstanceState);
+
+        MyLog.d(TAG, "onCreate");
+
         mMySp = new MySharedPrefManager(getActivity());
         mListener = new SharedPreferences.OnSharedPreferenceChangeListener() {
             @Override
@@ -99,6 +102,7 @@ public class PieChartFragment extends Fragment {
     @Override
     public void onResume(){
         super.onResume();
+        MyLog.d(TAG, "onResume");
         // Register to listen to updates in played time
         mMySp.getPlayedSharedPref().registerOnSharedPreferenceChangeListener(mListener);
     }

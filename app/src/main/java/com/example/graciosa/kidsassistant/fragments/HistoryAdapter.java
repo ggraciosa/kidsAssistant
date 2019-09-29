@@ -169,13 +169,14 @@ public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.ViewHold
         // Legend
         holder.getLegend().setTextColor(axisLineColor);
         holder.getLegend().setTextSize(AXIS_LABELS_TEXT_SIZE);
-        // Remove legend icons
+
+        // Remove legend icons tentatives
         // List<LegendEntry> legendEntryList = new LinkedList<>();
         // LegendEntry legendEntry = new LegendEntry("LEGEND", null, NaN, NaN, null, axisLineColor);
         // legendEntryList.add(legendEntry);
         // holder.getLegend().setCustom(legendEntryList);
         // holder.getLegend().setCustom(new LinkedList<LegendEntry>());
-        // holder.getLegend().setEnabled(false);
+        // holder.getLegend().setEnabled(false); // remove legend: colored squares & date interval
 
         // Set data
         holder.setData(data.getBarsData());
