@@ -7,7 +7,7 @@
 
     <!-- This path draws an orange triangular play icon. -->
     <path
-        android:fillColor="@color/colorAccent"
+        android:fillColor="@color/colorPlayed"
         android:pathData="M 4,2.5 L 4,9.5 L 9.5,6 Z"/>
 
 </vector>

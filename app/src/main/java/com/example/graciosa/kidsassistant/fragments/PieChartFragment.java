@@ -153,14 +153,14 @@ public class PieChartFragment extends Fragment {
         if (overtime){
             yValues.add(new PieEntry(limit, "Allowed"));
             yValues.add(new PieEntry(played - limit, "Overtime"));
-            colors[0] = getResources().getColor(R.color.colorAccent, null);
-            colors[1] = getResources().getColor(R.color.colorOrange, null);
+            colors[0] = getResources().getColor(R.color.colorPlayed, null);
+            colors[1] = getResources().getColor(R.color.colorOvertime, null);
 
         } else {
             yValues.add(new PieEntry(played, "Screen on"));
             yValues.add(new PieEntry(limit - played, "Remaining"));
-            colors[0] = getResources().getColor(R.color.colorAccent, null);
-            colors[1] = getResources().getColor(R.color.colorLightGrey, null);
+            colors[0] = getResources().getColor(R.color.colorPlayed, null);
+            colors[1] = getResources().getColor(R.color.colorRemaining, null);
         }
 
         PieDataSet dataSet = new PieDataSet(yValues, null);

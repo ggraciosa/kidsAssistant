@@ -2,7 +2,6 @@
 
     <!-- Base application theme. -->
     <style name="AppTheme" parent="Theme.MaterialComponents.DayNight">
-        <item name="colorAccent">@color/colorAccent</item>
     </style>
 
 </resources>

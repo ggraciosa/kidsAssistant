@@ -11,7 +11,7 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center"
         android:layout_margin="20dp"
-        android:textColor="@color/colorOrange"
+        android:textColor="@color/colorPlayed"
         android:text="Daily played time will be displayed here.\nTurn it on in App settings."
         android:textSize="16dp">
     </TextView>

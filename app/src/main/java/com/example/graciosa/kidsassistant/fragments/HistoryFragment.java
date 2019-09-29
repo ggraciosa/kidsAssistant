@@ -159,8 +159,8 @@ public class HistoryFragment extends Fragment {
         ArrayList<String> dates = new ArrayList<>();
 
         // Set color of each bar
-        int colorAccent = getResources().getColor(R.color.colorAccent);
-        int colorOrange = getResources().getColor(R.color.colorOrange);
+        int colorPlayed = getResources().getColor(R.color.colorPlayed);
+        int colorOvertime = getResources().getColor(R.color.colorOvertime);
         int colorTransparent = getResources().getColor(R.color.colorTransparent);
         int barsColor[] = new int[HistoryChartData.BARS_PER_CHART];
         ArrayList<Integer> barsTextColor = new ArrayList<>();
@@ -174,12 +174,12 @@ public class HistoryFragment extends Fragment {
             // Set bar color
             if (entities.get(i).getPlayed() <= entities.get(i).getLimit()){
                 // Played time within limit
-                barsColor[i] = colorAccent;
-                barsTextColor.add(colorAccent);
+                barsColor[i] = colorPlayed;
+                barsTextColor.add(colorPlayed);
             } else {
                 // Played time exceeded limit
-                barsColor[i] = colorOrange;
-                barsTextColor.add(colorOrange);
+                barsColor[i] = colorOvertime;
+                barsTextColor.add(colorOvertime);
             }
             // Get bar date
             dates.add(entities.get(i).getDate());

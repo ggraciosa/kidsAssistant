@@ -1,7 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="colorAccent">#00B8D4</color>
-    <color name="colorOrange">@android:color/holo_orange_dark</color>
-    <color name="colorLightGrey">#EEEEEE</color>
+    <!-- App brand colors -->
+    <color name="colorPlayed">#00B8D4</color>
+    <color name="colorOvertime">@android:color/holo_orange_dark</color>
+    <color name="colorRemaining">#EEEEEE</color>
+
+    <!-- Utility colors -->
     <color name="colorTransparent">@android:color/transparent</color>
 </resources>

@@ -56,7 +56,7 @@ public class MyNotificationManager {
         int minutesRemaining = limit - played;
         builder.setContentText(Long.toString(minutesRemaining) + " minutes left");
         builder.setProgress(limit, played, false);
-        builder.setColor(context.getResources().getColor(R.color.colorAccent));
+        builder.setColor(context.getResources().getColor(R.color.colorPlayed));
         builder.setColorized(true);
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
             // For API level < 26 there is no notif channel so importance attached to channel will
@@ -99,7 +99,7 @@ public class MyNotificationManager {
         int minutesRemaining = limit - played;
         builder.setContentText(Long.toString(minutesRemaining) + " minutes left");
         builder.setProgress(limit, played, false);
-        builder.setColor(context.getResources().getColor(R.color.colorAccent));
+        builder.setColor(context.getResources().getColor(R.color.colorPlayed));
         builder.setColorized(true);
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
             // For API level < 26 there is no notif channel so importance attached to channel will not be considered.
@@ -134,7 +134,7 @@ public class MyNotificationManager {
         Uri uri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
         builder.setSound(uri);
         builder.setProgress(100, 100, false);
-        builder.setColor(context.getResources().getColor(R.color.colorOrange));
+        builder.setColor(context.getResources().getColor(R.color.colorOvertime));
         builder.setColorized(true);
         post(context, builder);
     }

@@ -59,8 +59,9 @@ import android.view.MenuItem;
  * 40. Add action to bar touch e.g. display data, playedTime and limit?
  * 41. Add app theme menu light/dark/follow-system  (https://developer.android.com/guide/topics/ui/look-and-feel/darktheme).
  * 42. Update database and notification when daily limit is changed in settings.
- * 43. Change app bar text to white in light theme.
- * 44. Add elevation to history charts.
+ * 43. Change app bar text to white in light theme. Replace action bar with toolbar?
+ * 44. Add elevation to history charts. Host them in a card view?
+ * 45. Use the exact blue and orange colors of the app launcher icon as app brand colors.
  */
 
 public class MainActivity extends AppCompatActivity {
