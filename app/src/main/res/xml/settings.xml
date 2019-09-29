@@ -3,15 +3,15 @@
 
     <SwitchPreference
         android:key="computePlayingTime"
-        android:title="Compute playing time"
-        android:summary="Counts the time spent with screen on and notifies you when today's limit is reached"
+        android:title="Monitor screen on time"
+        android:summary="Counts the time the screen is on and notifies you when today's limit is reached"
         android:defaultValue="false" />
 
     <ListPreference
         android:key="playTimeLimit"
-        android:dialogTitle="Select today's playing time limit"
-        android:title="Playing time limit"
-        android:summary="Today's playing time limit"
+        android:dialogTitle="Select today's screen on time limit"
+        android:title="Today's screen on time limit"
+        android:summary="%1$s"
         android:entries="@array/settings_playtime_limit_list_labels"
         android:entryValues="@array/settings_playtime_limit_list_values"
         android:defaultValue="30" />

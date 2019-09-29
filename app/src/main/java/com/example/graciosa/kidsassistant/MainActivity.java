@@ -44,14 +44,14 @@ import android.view.MenuItem;
  * 27. DONE - Replace 0-n numbers with played day under each history bar chart xAxis.
  * 28. DONE - Use navigation for fragments management (https://codelabs.developers.google.com).
  * 29. DONE - Start computing time and launch 1st notification when feature is turned on.
- * 30. Use stacked bars in history to have in bars an indication of allowed and over played time.
- * 31. Security: broadcasts permissions, export, etc.
- * 32. Review typography adherence to material design (https://codelabs.developers.google.com).
- * 33. Replace expanded notification action with collapsed notification action (pause/play buttons)?
- * 34. Create a settings to enable/disable notification actions buttons?
- * 35. Internationalize and localize
- * 36. Clean: logs, commented code, not used code, not used resources, etc.
- * 37. Display selected values in preference
+ * 30. DONE - Display selected values in preference
+ * 31. Use stacked bars in history to have in bars an indication of allowed and over played time.
+ * 32. Security: broadcasts permissions, export, etc.
+ * 33. Review typography adherence to material design (https://codelabs.developers.google.com).
+ * 34. Replace expanded notification action with collapsed notification action (pause/play buttons)?
+ * 35. Create a settings to enable/disable notification actions buttons?
+ * 36. Internationalize and localize
+ * 37. Clean: logs, commented code, not used code, not used resources, etc.
  * 38. Bug: invalid default shared preference (computePlayingTime=true, maxPlayingTime=120) is brought
  *     when install App in my Z3 Play P multi user; cleaning app data from Global Settings solves the
  *     issue; issue does not happen in Z2 Play N single user neither G2 M single user.

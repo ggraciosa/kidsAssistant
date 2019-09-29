@@ -157,7 +157,7 @@ public class PieChartFragment extends Fragment {
             colors[1] = getResources().getColor(R.color.colorOrange, null);
 
         } else {
-            yValues.add(new PieEntry(played, "Played"));
+            yValues.add(new PieEntry(played, "Screen on"));
             yValues.add(new PieEntry(limit - played, "Remaining"));
             colors[0] = getResources().getColor(R.color.colorAccent, null);
             colors[1] = getResources().getColor(R.color.colorLightGrey, null);
