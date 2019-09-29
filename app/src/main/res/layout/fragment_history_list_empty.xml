@@ -15,4 +15,5 @@
         android:text="Daily played time will be displayed here.\nTurn it on in App settings."
         android:textSize="16dp">
     </TextView>
+
 </FrameLayout>
