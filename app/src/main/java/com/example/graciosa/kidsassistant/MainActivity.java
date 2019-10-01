@@ -46,19 +46,19 @@ import android.view.MenuItem;
  * 29. DONE - Start computing time and launch 1st notification when feature is turned on.
  * 30. DONE - Display selected values in preference
  * 31. DONE - Support light and dark modes, sensible to global settings, no app theme menu.
- * 32. Use stacked bars in history to have in bars an indication of allowed and over played time.
- * 33. Security: broadcasts permissions, export, etc.
- * 34. Review typography adherence to material design (https://codelabs.developers.google.com).
- * 35. Replace expanded notification action with collapsed notification action (pause/play buttons)?
- * 36. Create a settings to enable/disable notification actions buttons?
- * 37. Internationalize and localize
- * 38. Clean: logs, commented code, not used code, not used resources, etc.
- * 39. Bug: invalid default shared preference (computePlayingTime=true, maxPlayingTime=120) is brought
+ * 32. DONE - Add app theme switch light/dark/follow-system (https://developer.android.com/guide/topics/ui/look-and-feel/darktheme).
+ * 33. DONE - Update database and notification when daily limit is changed in settings.
+ * 34. Use stacked bars in history to have in bars an indication of allowed and over played time.
+ * 35. Security: broadcasts permissions, export, etc.
+ * 36. Review typography adherence to material design (https://codelabs.developers.google.com).
+ * 37. Replace expanded notification action with collapsed notification action (pause/play buttons)?
+ * 38. Create a settings to enable/disable notification actions buttons?
+ * 39. Internationalize and localize
+ * 40. Clean: logs, commented code, not used code, not used resources, etc.
+ * 41. Bug: invalid default shared preference (computePlayingTime=true, maxPlayingTime=120) is brought
  *     when install App in my Z3 Play P multi user; cleaning app data from Global Settings solves the
  *     issue; issue does not happen in Z2 Play N single user neither G2 M single user.
- * 40. Add action to bar touch e.g. display data, playedTime and limit?
- * 41. Add app theme switch light/dark/follow-system (https://developer.android.com/guide/topics/ui/look-and-feel/darktheme).
- * 42. Update database and notification when daily limit is changed in settings.
+ * 42. Add action to bar touch e.g. display data, playedTime and limit?
  * 43. Change app bar text to white in light theme. Replace action bar with toolbar?
  * 44. Add elevation to history charts. Host them in a card view?
  * 45. Use the exact blue and orange colors of the app launcher icon as app brand colors.

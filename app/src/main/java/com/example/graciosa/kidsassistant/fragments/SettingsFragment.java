@@ -72,7 +72,7 @@ public class SettingsFragment extends PreferenceFragmentCompat
                 // Switched on: set alarm to compute playing times
                 MyLog.d(TAG,"onSharedPreferenceChanged: compute playing time pref -> ON");
                 MyAlarmManager.enableOrUpdate(getActivity(), Constants.INTERVAL);
-                // Post notification of played time status
+                // Post notification with current played time
                 Context context = getActivity().getApplicationContext();
                 Intent intent = new Intent(context, TimeStepReceiver.class);
                 intent.setAction(TimeStepReceiver.COMPUTE_TIME);
@@ -85,7 +85,13 @@ public class SettingsFragment extends PreferenceFragmentCompat
                 // the switched-off time when toggle is later switched-on.
                 sp.resetElapsedPlayedTime();
             }
-        } else if (key.equals(MySharedPrefManager.SHARED_PREF_SETTINGS_THEME_KEY)) {
+        } else if (key.equals(MySharedPrefManager.SHARED_PREF_SETTINGS_PLAY_TIME_LIMIT_KEY)){
+            // Update notification since the new limit changed current progress, time left, etc.
+            Context context = getActivity().getApplicationContext();
+            Intent intent = new Intent(context, TimeStepReceiver.class);
+            intent.setAction(TimeStepReceiver.COMPUTE_TIME);
+            context.sendBroadcast(intent);
+        } else if (key.equals(MySharedPrefManager.SHARED_PREF_SETTINGS_THEME_KEY)){
             String theme = sp.getTheme();
             int mode;
             switch (theme){
